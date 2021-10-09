@@ -29,8 +29,8 @@ class Scoreboard():
         self.first_player_score_rect.right = self.screen_rect.right
         self.second_player_score_rect.right = self.screen_rect.left + 55
 
-        self.first_player_score_rect.top = 50
-        self.second_player_score_rect.bottom = 650
+        self.first_player_score_rect.bottom = 650
+        self.second_player_score_rect.top = 50
 
     def show_score(self):
         self.screen.blit(self.first_player_score_image, self.first_player_score_rect)
