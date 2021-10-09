@@ -27,9 +27,11 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             elif event.key == pg.K_LEFT:
                 ship_second_player.left_movement = True
 
+            # Comment if block to enable Accelerometer input data
             if event.key == pg.K_a:
                 ship_first_player.left_movement = True
 
+            # Comment elif block to enable Accelerometer input data
             elif event.key == pg.K_d:
                 ship_first_player.right_movement = True            
 
