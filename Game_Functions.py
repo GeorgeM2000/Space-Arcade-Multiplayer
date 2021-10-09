@@ -27,6 +27,12 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             elif event.key == pg.K_LEFT:
                 ship_second_player.left_movement = True
 
+            if event.key == pg.K_a:
+                ship_first_player.left_movement = True
+
+            elif event.key == pg.K_d:
+                ship_first_player.right_movement = True            
+
             if event.key == pg.K_SPACE and play_button.running_state:
                 if len(second_player_bullets) < ship_second_player.bullets_allowed:
                     new_bullet = bsp(screen, ship_second_player)
@@ -40,8 +46,15 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
         elif event.type == pg.KEYUP:
             if event.key == pg.K_RIGHT:
                 ship_second_player.right_movement = False
+
             elif event.key == pg.K_LEFT:
                 ship_second_player.left_movement = False
+
+            elif event.key == pg.K_a:
+                ship_first_player.left_movement = False
+
+            elif event.key == pg.K_d:
+                ship_first_player.right_movement = False
 
 def update_screen(screen, ship_first_player, ship_second_player, bgc, first_player_bullets, 
                     second_player_bullets, play_button, scoreboard, aliens):
@@ -119,6 +132,8 @@ def upgrade_ship(ship, alien_life, scoreboard, player):
         scoreboard.prep_score()
     
 
+# Bullet - Ship Collisions ----------------------------------------------------------------------------------
+
 def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play_button, second_ship):
 
     collided_bullet = pg.sprite.spritecollideany(first_ship, second_ship_bullets)
@@ -126,7 +141,7 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
     # If a bullet has collided with the ship
     if collided_bullet:
         second_ship_bullets.remove(collided_bullet) # Remove the bullet from the group
-        scoreboard.second_player_life -= first_ship.life_reduction   # Reduce ship's life by one
+        scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
         if(scoreboard.second_player_life <= 0):
             play_button.running_state = False
             return
@@ -143,13 +158,15 @@ def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, pla
     # If a bullet has collided with the ship
     if collided_bullet:
         first_ship_bullets.remove(collided_bullet)  # Remove the bullet from the group
-        scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
+        scoreboard.second_player_life -= first_ship.life_reduction   # Reduce ship's life by one
         if(scoreboard.first_player_life <= 0):
             play_button.running_state = False  
             return 
         scoreboard.prep_score()    # Update the score
-        
 
+
+ 
+# Bullet - Alien Collisions ---------------------------------------------------------------------------
 
 def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_ship, scoreboard):
 
@@ -158,11 +175,11 @@ def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_sh
     # If an alien has collided with a bullet
     if collision:
         collided_alien = collision[list(collision.keys())[0]][0]
+        collided_alien.life -= first_ship.life_reduction
         if collided_alien.life <= 0:
-            upgrade_ship(first_ship, collided_alien.life_initial_value, scoreboard, 2)
+            upgrade_ship(first_ship, collided_alien.life_initial_value, scoreboard, 1)
             aliens.remove(collided_alien)
-        else:
-            collided_alien.life -= first_ship.life_reduction
+            
         
 
         
@@ -174,11 +191,11 @@ def check_second_ship_bullet_alien_collision(second_ship_bullets, aliens, second
     # If an alien has collided with a bullet
     if collision:
         collided_alien = collision[list(collision.keys())[0]][0]
+        collided_alien.life -= second_ship.life_reduction
         if collided_alien.life <= 0:
-            upgrade_ship(second_ship, collided_alien.life_initial_value, scoreboard, 1)
+            upgrade_ship(second_ship, collided_alien.life_initial_value, scoreboard, 2)
             aliens.remove(collided_alien)
-        else:
-            collided_alien.life -= second_ship.life_reduction
+            
 
 
 
