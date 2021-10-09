@@ -33,23 +33,24 @@ def run_game():
 
     # Start alien sideway movement timer
     alien_movement_timer = pg.time.get_ticks()
-    alien_movement_time_range = list(range(1, 6))      # In milliseconds
+    alien_movement_time_range = list(range(1, 6))      # In milliseconds e.g 1 millisec, 2 millisec
 
     # Fleet of aliens creation time range
     fleet_aliens_timer = pg.time.get_ticks()
-    #fleet_aliens_time_range = [time for time in range(20000, 120001, 5000)]
-    fleet_aliens_time_range = [time for time in range(5000, 10001, 1000)]
+    fleet_aliens_time_range = [time for time in range(20000, 120001, 5000)]
 
-    #ports = serial.tools.list_ports.comports()
-    #serialInst = serial.Serial()
 
-    #portVariable = "COM" + str(3)
+    # Uncomment to enable Accelerometer input data
+    """ports = serial.tools.list_ports.comports()
+    serialInst = serial.Serial()
 
-    #serialInst.baudrate = 115200
-    #serialInst.port = portVariable
-    #serialInst.open()
+    portVariable = "COM" + str(3)
 
-    user_movement = 0.0
+    serialInst.baudrate = 115200
+    serialInst.port = portVariable
+    serialInst.open()
+
+    user_movement = 0.0"""
 
     # Background color
     background_color = (230,230,230)
@@ -67,9 +68,10 @@ def run_game():
         # If the game starts
         if play_button.running_state:
 
-            #if serialInst.in_waiting:
-                #packet = serialInst.readline()
-                #user_movement = float(packet.decode("utf"))
+            # Uncomment to enable Accelerometer control
+            """if serialInst.in_waiting:
+                packet = serialInst.readline()
+                user_movement = float(packet.decode("utf"))
 
             if user_movement < 0.0:
                 if user_movement >= -0.20:
@@ -86,6 +88,7 @@ def run_game():
                 else:
                     ship_first_player.speed_factor = 1
                     ship_first_player.right_movement = True
+            """
 
             # Update for Aliens
             if (pg.time.get_ticks() - alien_movement_timer) > alien_movement_time_range[random.randint(0,4)]:
@@ -108,7 +111,7 @@ def run_game():
         
             # Check for bullet-alien collisions
             gf.check_first_ship_bullet_alien_collision(first_spaceship_bullets, aliens, ship_first_player, scoreboard)
-            gf.check_second_ship_bullet_alien_collision(second_spaceship_bullets, aliens, ship_second_player, scoreboard, ship_first_player)
+            gf.check_second_ship_bullet_alien_collision(second_spaceship_bullets, aliens, ship_second_player, scoreboard)
 
             # Updates for bullets
             first_spaceship_bullets.update()
