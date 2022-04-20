@@ -64,10 +64,8 @@ class Scoreboard():
         # Create winner image
         if self.winner == 1:
             self.winner_image = self.font.render("First Player Wins!", True, (204,0,0), (230,230,230))
-        elif self.winner == -1:
-            self.winner_image = self.font.render("Second Player Wins!", True, (0,0,204), (230,230,230))
         else:
-            self.winner_image = self.font.render("Tie!", True, (0,0,0), (230,230,230))
+            self.winner_image = self.font.render("Second Player Wins!", True, (0,0,204), (230,230,230))
         
         # Create winner image rect and place it on the screen
         self.winner_rect = self.winner_image.get_rect()
