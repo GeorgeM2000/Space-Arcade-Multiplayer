@@ -31,6 +31,7 @@ def run_game():
     # Create a play button
     play_button = sb(surface, "Play")
 
+
     # Start alien sideway movement timer
     alien_movement_timer = pg.time.get_ticks()
     alien_movement_time_range = list(range(1, 6))      # In milliseconds e.g 1 millisec, 2 millisec
@@ -53,7 +54,7 @@ def run_game():
     user_movement = 0.0"""
 
     # Background color
-    background_color = (230,230,230)
+    background_color = (230, 230, 230)
     
     # Create two players
     ship_first_player = Spaceship_First_Player(surface)

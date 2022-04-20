@@ -5,7 +5,7 @@ class Spaceship_First_Player():
     def __init__(self, screen):
         self.screen = screen
 
-        self.image = pg.image.load('C:\\Users\\giorg\\SpaceshipArcade\\ship.bmp')
+        self.image = pg.image.load('Spaceship\\ship.bmp')
 
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
@@ -22,13 +22,13 @@ class Spaceship_First_Player():
         self.bullet_width = 3
         self.bullet_height = 15
         self.life_reduction = 1
-        self.initial_life = 100
+        self.initial_life = 10
 
     def update(self):
         if self.right_movement and self.rect.right < self.screen_rect.right:
-            self.rect.centerx += 1  # self.speed_factor
+            self.rect.centerx += 1  
         elif self.left_movement and self.rect.left > 0:
-            self.rect.centerx -= 1  # self.speed_factor
+            self.rect.centerx -= 1
 
     def blitme(self):
         self.screen.blit(pg.transform.scale(self.image, (60,48)), self.rect)

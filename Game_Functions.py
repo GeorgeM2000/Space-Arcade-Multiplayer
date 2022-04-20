@@ -85,43 +85,46 @@ def update_screen(screen, ship_first_player, ship_second_player, bgc, first_play
 
     # Draw play button if game state is false
     if not play_button.running_state:
-        play_button.draw_button(play_button.running_state)
+        play_button.draw_button()
+        scoreboard.show_winner()
 
     # Show the most recent screen updates
     pg.display.flip()
 
 
-def upgrade_ship(ship, alien_life, scoreboard, player):
-    random_upgrade = random.randint(1, 6)
+def upgrade_ship(ship, alien, scoreboard, player):
 
     # Speed factor upgrade
-    if random_upgrade == 1:
-        if alien_life > 9:
+    if alien.alien_code == 1:
+        if alien.life > 10:
             ship.bullet_speed_factor += 2
         else:
             ship.bullet_speed_factor += 1
+
     # Bullet width upgrade
-    elif random_upgrade == 2:
-        if alien_life > 9:
+    elif alien.alien_code == 2:
+        if alien.life > 10:
             ship.bullet_width += 2
         else:
             ship.bullet_width += 1
+
     # Bullets allowed upgrade
-    elif random_upgrade == 3:
-        if alien_life > 9:
+    elif alien.alien_code == 3:
+        if alien.life > 10:
             ship.bullets_allowed += 2
         else:
             ship.bullets_allowed += 1
+
     # Life reduction upgrade
-    elif random_upgrade == 4:
-        if alien_life > 9:
+    elif alien.alien_code == 4:
+        if alien.life > 10:
             ship.life_reduction += 2
         else:
             ship.life_reduction += 1
-        print("Life Reduction", ship.life_reduction)
+
     # Life upgrade
-    elif random_upgrade == 5:
-        if alien_life > 9:
+    elif alien.alien_code == 5:
+        if alien.life > 10:
             if player == 1:
                 scoreboard.first_player_life += 20
             else:
@@ -131,7 +134,9 @@ def upgrade_ship(ship, alien_life, scoreboard, player):
                 scoreboard.first_player_life += 10
             else:
                 scoreboard.second_player_life += 10
-        scoreboard.prep_score()
+        
+
+        scoreboard.prepare_HP()
     
 
 # Bullet - Ship Collisions ----------------------------------------------------------------------------------
@@ -140,14 +145,18 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
 
     collided_bullet = pg.sprite.spritecollideany(first_ship, second_ship_bullets)
 
-    # If a bullet has collided with the ship
+    # If a bullet has collided with the first ship
     if collided_bullet:
         second_ship_bullets.remove(collided_bullet) # Remove the bullet from the group
         scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
-        if(scoreboard.second_player_life <= 0):
+        if(scoreboard.first_player_life <= 0):
             play_button.running_state = False
+            scoreboard.second_player_score += 1
+            scoreboard.winner = -1
+            scoreboard.prepare_winner_message() # Update the winner
+            scoreboard.prepare_Score()  # Update the score
             return
-        scoreboard.prep_score()    # Update the score
+        scoreboard.prepare_HP()    # Update the HP
        
 
 
@@ -161,10 +170,14 @@ def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, pla
     if collided_bullet:
         first_ship_bullets.remove(collided_bullet)  # Remove the bullet from the group
         scoreboard.second_player_life -= first_ship.life_reduction   # Reduce ship's life by one
-        if(scoreboard.first_player_life <= 0):
+        if(scoreboard.second_player_life <= 0):
             play_button.running_state = False  
+            scoreboard.first_player_score += 1
+            scoreboard.winner = 1
+            scoreboard.prepare_winner_message() # Winner the winner
+            scoreboard.prepare_Score()  # Update the score
             return 
-        scoreboard.prep_score()    # Update the score
+        scoreboard.prepare_HP()    # Update the HP
 
 
  
@@ -179,7 +192,7 @@ def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_sh
         collided_alien = collision[list(collision.keys())[0]][0]
         collided_alien.life -= first_ship.life_reduction
         if collided_alien.life <= 0:
-            upgrade_ship(first_ship, collided_alien.life_initial_value, scoreboard, 1)
+            upgrade_ship(first_ship, collided_alien, scoreboard, 1)
             aliens.remove(collided_alien)
             
         
@@ -195,7 +208,7 @@ def check_second_ship_bullet_alien_collision(second_ship_bullets, aliens, second
         collided_alien = collision[list(collision.keys())[0]][0]
         collided_alien.life -= second_ship.life_reduction
         if collided_alien.life <= 0:
-            upgrade_ship(second_ship, collided_alien.life_initial_value, scoreboard, 2)
+            upgrade_ship(second_ship, collided_alien, scoreboard, 2)
             aliens.remove(collided_alien)
             
 
@@ -215,7 +228,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_first_player.bullet_width = 3
         ship_first_player.bullet_height = 15
         ship_first_player.bullets_allowed = 3
-        ship_first_player.initial_life = 100
+        ship_first_player.initial_life = 10
 
         # Set second ship utilities
         ship_second_player.speed_factor = 1.5
@@ -223,7 +236,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_second_player.bullet_width = 3
         ship_second_player.bullet_height = 15
         ship_second_player.bullets_allowed = 3
-        ship_second_player.initial_life = 100
+        ship_second_player.initial_life = 10
 
         # Empty the bullets group
         bulletsFirstPlayer.empty()
@@ -239,7 +252,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         # Update the score
         scoreboard.second_player_life = ship_second_player.initial_life
         scoreboard.first_player_life = ship_first_player.initial_life
-        scoreboard.prep_score()
+        scoreboard.prepare_HP()
 
 
 def create_fleet(screen, aliens):

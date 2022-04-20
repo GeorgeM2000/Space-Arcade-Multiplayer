@@ -9,29 +9,80 @@ class Scoreboard():
         self.first_player_life = ship_first_player.initial_life
         self.second_player_life = ship_second_player.initial_life
 
+        self.first_player_score= 0
+        self.second_player_score = 0
+        self.winner = None
 
-        self.text_color = (30, 30, 30)
-        self.font = pg.font.SysFont(None, 48)
 
-        self.prep_score()
+        self.font = pg.font.SysFont(None, 30) 
 
-    def prep_score(self):
+        self.prepare_HP()
+        self.prepare_Score()
+
+    def prepare_HP(self):
+
+        # Turn the HP into a rendered image
+        first_player_hp = "HP " + str(self.first_player_life)
+        second_player_hp = "HP " + str(self.second_player_life)
+
+        # Create HP image
+        self.first_player_hp_image = self.font.render(first_player_hp, True, (204,0,0), (230,230,230))
+        self.second_player_hp_image = self.font.render(second_player_hp, True, (0,0,204), (230,230,230))
+
+        # Create HP rectangle
+        self.first_player_hp_rect = self.first_player_hp_image.get_rect()
+        self.second_player_hp_rect = self.second_player_hp_image.get_rect()
+
+        # Place rectangle on the screen
+        self.first_player_hp_rect.right = self.screen_rect.right
+        self.second_player_hp_rect.left = self.screen_rect.left
+
+        self.first_player_hp_rect.bottom = 650
+        self.second_player_hp_rect.top = 50
+
+    def prepare_Score(self):
         # Turn the score into a rendered image
-        first_player_score = str(self.first_player_life)
-        second_player_score = str(self.second_player_life)
+        first_player_score = "Score " + str(self.first_player_score)
+        second_player_score = "Score " + str(self.second_player_score)
 
-        self.first_player_score_image = self.font.render(first_player_score, True, self.text_color, (230,230,230))
-        self.second_player_score_image = self.font.render(second_player_score, True, self.text_color, (230,230,230))
+        # Create score image
+        self.first_player_score_image = self.font.render(first_player_score, True, (204,0,0), (230,230,230))
+        self.second_player_score_image = self.font.render(second_player_score, True, (0,0,204), (230,230,230))
 
+        # Create score rectangle
         self.first_player_score_rect = self.first_player_score_image.get_rect()
         self.second_player_score_rect = self.second_player_score_image.get_rect()
 
+        # Place rectangle on the screen
         self.first_player_score_rect.right = self.screen_rect.right
-        self.second_player_score_rect.right = self.screen_rect.left + 55
+        self.second_player_score_rect.left = self.screen_rect.left
 
-        self.first_player_score_rect.bottom = 650
-        self.second_player_score_rect.top = 50
+        self.first_player_score_rect.bottom = 625
+        self.second_player_score_rect.top = 75
+
+    def prepare_winner_message(self):
+        # Create winner image
+        if self.winner == 1:
+            self.winner_image = self.font.render("First Player Wins!", True, (204,0,0), (230,230,230))
+        elif self.winner == -1:
+            self.winner_image = self.font.render("Second Player Wins!", True, (0,0,204), (230,230,230))
+        else:
+            self.winner_image = self.font.render("Tie!", True, (0,0,0), (230,230,230))
+        
+        # Create winner image rect and place it on the screen
+        self.winner_rect = self.winner_image.get_rect()
+        self.winner_rect.center = self.screen_rect.center
+        self.winner_rect.bottom = 410
+
+    def show_winner(self):
+        if self.winner != None:
+            self.screen.blit(self.winner_image, self.winner_rect)
 
     def show_score(self):
+        # HP -------------------
+        self.screen.blit(self.first_player_hp_image, self.first_player_hp_rect)
+        self.screen.blit(self.second_player_hp_image, self.second_player_hp_rect)
+
+        # Score -------------------
         self.screen.blit(self.first_player_score_image, self.first_player_score_rect)
         self.screen.blit(self.second_player_score_image, self.second_player_score_rect)

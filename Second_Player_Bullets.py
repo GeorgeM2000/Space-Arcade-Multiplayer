@@ -8,7 +8,7 @@ class Second_Player_Bullets(Sprite):
         self.bullet_speed_factor = ship_second_player.bullet_speed_factor
         self.bullet_width = ship_second_player.bullet_width
         self.bullet_height = ship_second_player.bullet_height
-        self.bullet_color = 60,60,60
+        self.bullet_color = 0,0,204 #60,60,60
         
 
         self.rect = pg.Rect(0,0, self.bullet_width, self.bullet_height)

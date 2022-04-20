@@ -8,8 +8,10 @@ class Alien(Sprite):
         super(Alien, self).__init__()
         self.screen = screen
 
+        self.alien_code = random.randint(1, 5)
+
         # Load alien image
-        self.image = pg.image.load_basic('C:\\Users\\giorg\\SpaceshipArcade\\Aliens\\alien.bmp')
+        self.image = pg.image.load_basic(self.pick_alien_type(self.alien_code))
 
         # Get alien image width and height
         self.rect = self.image.get_rect()
@@ -34,7 +36,7 @@ class Alien(Sprite):
         # Alien utilities
         self.speed_factor = 1
         self.life_reduction_rate = 1
-        self.life = random.randint(1, 3) # 5 15
+        self.life = random.randint(5, 15) # 5 15
         self.life_initial_value = self.life
 
 
@@ -46,3 +48,17 @@ class Alien(Sprite):
 
     def blitme(self):
         self.screen.blit(self.image, self.rect)
+
+    def pick_alien_type(self, alien_code):
+        if alien_code == 1:
+            return 'Aliens\\alien.bmp'
+        elif alien_code == 2:
+            return 'Aliens\\alienblue.bmp'
+        elif alien_code == 3:
+            return 'Aliens\\alienred.bmp'
+        elif alien_code == 4:
+            return 'Aliens\\alienblack.bmp'
+        elif alien_code == 5:
+            return 'Aliens\\alienorange.bmp'
+        
+        

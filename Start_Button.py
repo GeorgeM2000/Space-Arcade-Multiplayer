@@ -9,7 +9,7 @@ class StartButton():
         self.running_state = False
 
         self.width, self.height = 200, 50
-        self.button_color = (0,255,0)
+        self.button_color = (0,0,153) #0 255 0
         self.text_color = (255,255,255)
         self.font = pygame.font.SysFont(None, 48)
 
@@ -22,10 +22,9 @@ class StartButton():
         self.msg_image = self.font.render(message, True, self.text_color, self.button_color)
         self.msg_image_rect = self.msg_image.get_rect()
         self.msg_image_rect.center = self.rect.center
-
     
-    def draw_button(self, running_state):
-        if not running_state:
-            self.screen.fill(self.button_color, self.rect)
-            self.screen.blit(self.msg_image, self.msg_image_rect)
+    
+    def draw_button(self):
+        self.screen.fill(self.button_color, self.rect)
+        self.screen.blit(self.msg_image, self.msg_image_rect)
 
