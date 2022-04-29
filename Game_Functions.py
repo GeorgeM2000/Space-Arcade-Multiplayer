@@ -7,7 +7,7 @@ from Alien import Alien
 
 
 def check_events(screen, ship_first_player, ship_second_player, first_player_bullets, second_player_bullets, 
-                play_button, scoreboard, aliens):
+                play_button, scoreboard, aliens, analog_keys, button_keys):
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -17,6 +17,52 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_second_player, first_player_bullets, 
             second_player_bullets, scoreboard, aliens)
 
+        # Controller joy axis motion movement
+        elif event.type == pg.JOYAXISMOTION:
+            analog_keys[event.axis] = event.value
+            # Horizontal Analog
+
+            # Controller movement for the second player
+            if event.joy == 0:
+                if analog_keys[0] < -.7:
+                    ship_second_player.left_movement = True
+                else:
+                    ship_second_player.left_movement = False
+
+                if analog_keys[0] > .7:
+                    ship_second_player.right_movement = True
+                else:
+                    ship_second_player.right_movement = False
+            # Controller movement for the second player
+            else:
+                if analog_keys[0] < -.7:
+                    ship_first_player.left_movement = True
+                else:
+                    ship_first_player.left_movement = False
+
+                if analog_keys[0] > .7:
+                    ship_first_player.right_movement = True
+                else:
+                    ship_first_player.right_movement = False
+
+        # Controller joy button
+        elif event.type == pg.JOYBUTTONDOWN and play_button.running_state:
+            if event.button == button_keys["x"]:
+                
+                # Second player bullet control
+                if event.joy == 0:
+                    if len(second_player_bullets) < ship_second_player.bullets_allowed:
+                        new_bullet = bsp(screen, ship_second_player)
+                        second_player_bullets.add(new_bullet)
+                # First player bullet control
+                elif event.joy == 1:
+                    if len(first_player_bullets) < ship_first_player.bullets_allowed:
+                        new_bullet = bfp(screen, ship_first_player)
+                        first_player_bullets.add(new_bullet)
+   
+
+        """
+        ------------------ Uncomment if you want to play the game with keyboard buttons ---------------------
 
         # Ship movement functionalities
         elif event.type == pg.KEYDOWN:
@@ -27,11 +73,9 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             elif event.key == pg.K_LEFT:
                 ship_second_player.left_movement = True
 
-            # Comment if block to enable Accelerometer input data
             if event.key == pg.K_a:
                 ship_first_player.left_movement = True
 
-            # Comment elif block to enable Accelerometer input data
             elif event.key == pg.K_d:
                 ship_first_player.right_movement = True            
 
@@ -57,6 +101,7 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
 
             elif event.key == pg.K_d:
                 ship_first_player.right_movement = False
+        """
 
 def update_screen(screen, ship_first_player, ship_second_player, bgc, first_player_bullets, 
                     second_player_bullets, play_button, scoreboard, aliens):

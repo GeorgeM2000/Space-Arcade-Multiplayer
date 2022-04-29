@@ -1,6 +1,7 @@
 # Libraries ----------------------------------------------
 import random
 import pygame as pg
+import json
 import Game_Functions as gf
 import serial.tools.list_ports 
 import sys
@@ -40,19 +41,6 @@ def run_game():
     fleet_aliens_timer = pg.time.get_ticks()
     fleet_aliens_time_range = [time for time in range(20000, 120001, 5000)]
 
-
-    # Uncomment to enable Accelerometer input data
-    """ports = serial.tools.list_ports.comports()
-    serialInst = serial.Serial()
-
-    portVariable = "COM" + str(3)
-
-    serialInst.baudrate = 115200
-    serialInst.port = portVariable
-    serialInst.open()
-
-    user_movement = 0.0"""
-
     # Background color
     background_color = (230, 230, 230)
     
@@ -64,32 +52,23 @@ def run_game():
     scoreboard = Scoreboard(surface, ship_first_player, ship_second_player)
 
 
+    # Initialize controller
+    joysticks = []
+    for i in range(pg.joystick.get_count()):
+        joysticks.append(pg.joystick.Joystick(i))
+    for joystick in joysticks:
+        joystick.init()
+
+    with open(os.path.join("PS4_Keys.json"), 'r+') as file:
+        button_keys = json.load(file)
+
+    analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5: -1}
+
+
     while True:
 
         # If the game starts
         if play_button.running_state:
-
-            # Uncomment to enable Accelerometer control
-            """if serialInst.in_waiting:
-                packet = serialInst.readline()
-                user_movement = float(packet.decode("utf"))
-
-            if user_movement < 0.0:
-                if user_movement >= -0.20:
-                    ship_first_player.left_movement = False
-                    ship_first_player.right_movement = False
-                else:
-                    ship_first_player.speed_factor = 1
-                    ship_first_player.left_movement = True
-
-            elif user_movement > 0.0:
-                if user_movement <= 0.20:
-                    ship_first_player.left_movement = False
-                    ship_first_player.right_movement = False
-                else:
-                    ship_first_player.speed_factor = 1
-                    ship_first_player.right_movement = True
-            """
 
             # Update for Aliens
             if (pg.time.get_ticks() - alien_movement_timer) > alien_movement_time_range[random.randint(0,4)]:
@@ -139,7 +118,7 @@ def run_game():
 
         # Check for events 
         gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
-                        second_spaceship_bullets, play_button, scoreboard, aliens)
+                        second_spaceship_bullets, play_button, scoreboard, aliens, analog_keys, button_keys)
 
 
         # Update the screen
