@@ -18,7 +18,7 @@ class Alien(Sprite):
  
 
         # Set alien coordinates(x and y)
-        self.rect.x = aliens_x_position[random.randint(0, 3)]
+        self.rect.x = aliens_x_position
         self.rect.y =  alien_y_position
 
 
@@ -36,7 +36,7 @@ class Alien(Sprite):
         # Alien utilities
         self.speed_factor = 1
         self.life_reduction_rate = 1
-        self.life = random.randint(5, 15) # 5 15
+        self.life = random.randint(5, 10) 
         self.life_initial_value = self.life
 
 
@@ -49,6 +49,7 @@ class Alien(Sprite):
     def blitme(self):
         self.screen.blit(self.image, self.rect)
 
+    # Pick an alien type based on the alien code
     def pick_alien_type(self, alien_code):
         if alien_code == 1:
             return 'Aliens\\alien.bmp'

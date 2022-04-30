@@ -1,10 +1,7 @@
-# Libraries ----------------------------------------------
 import random
 import pygame as pg
 import json
 import Game_Functions as gf
-import serial.tools.list_ports 
-import sys
 import os
 from Spaceship_First_Player import Spaceship_First_Player
 from Spacehip_Second_Player import Spaceship_Second_Player
@@ -62,7 +59,13 @@ def run_game():
     with open(os.path.join("PS4_Keys.json"), 'r+') as file:
         button_keys = json.load(file)
 
-    analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5: -1}
+    analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5:-1}
+
+
+    # Initialize sound effects
+    bullet_sound = pg.mixer.Sound('Sounds/laser1.wav')
+    alien_sound = pg.mixer.Sound('Sounds/Explosion_02.wav')
+    hit_sound = pg.mixer.Sound("Sounds/Hit_02.wav")
 
 
     while True:
@@ -85,13 +88,13 @@ def run_game():
             ship_second_player.update()
 
             # Check for ship-bullet collisions
-            gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player)
-            gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player)
+            gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound)
+            gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound)
 
         
             # Check for bullet-alien collisions
-            gf.check_first_ship_bullet_alien_collision(first_spaceship_bullets, aliens, ship_first_player, scoreboard)
-            gf.check_second_ship_bullet_alien_collision(second_spaceship_bullets, aliens, ship_second_player, scoreboard)
+            gf.check_first_ship_bullet_alien_collision(first_spaceship_bullets, aliens, ship_first_player, scoreboard, alien_sound)
+            gf.check_second_ship_bullet_alien_collision(second_spaceship_bullets, aliens, ship_second_player, scoreboard, alien_sound)
 
             # Updates for bullets
             first_spaceship_bullets.update()
@@ -118,7 +121,7 @@ def run_game():
 
         # Check for events 
         gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
-                        second_spaceship_bullets, play_button, scoreboard, aliens, analog_keys, button_keys)
+                        second_spaceship_bullets, play_button, scoreboard, aliens, analog_keys, bullet_sound)
 
 
         # Update the screen

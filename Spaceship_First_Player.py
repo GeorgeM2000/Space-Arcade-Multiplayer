@@ -16,7 +16,6 @@ class Spaceship_First_Player():
         self.right_movement = False
         self.left_movement = False
 
-        self.speed_factor = 1 # None
         self.bullets_allowed = 3
         self.bullet_speed_factor = 1
         self.bullet_width = 3

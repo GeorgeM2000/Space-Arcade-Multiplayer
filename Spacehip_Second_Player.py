@@ -16,7 +16,6 @@ class Spaceship_Second_Player():
         self.right_movement = False
         self.left_movement = False
 
-        self.speed_factor = 1
         self.bullets_allowed = 3
         self.bullet_speed_factor = 1
         self.bullet_width = 3
@@ -26,9 +25,9 @@ class Spaceship_Second_Player():
 
     def update(self):
         if self.right_movement and self.rect.right < self.screen_rect.right:
-            self.rect.centerx += self.speed_factor
+            self.rect.centerx += 1
         elif self.left_movement and self.rect.left > 0:
-            self.rect.centerx -= self.speed_factor
+            self.rect.centerx -= 1
 
     def blitme(self):
         self.screen.blit(pg.transform.scale(self.image, (60,48)), self.rect)

@@ -1,4 +1,5 @@
 import sys
+from matplotlib.style import available
 import pygame as pg
 import random
 from First_Player_Bullets import First_Player_Bullets as bfp
@@ -7,7 +8,7 @@ from Alien import Alien
 
 
 def check_events(screen, ship_first_player, ship_second_player, first_player_bullets, second_player_bullets, 
-                play_button, scoreboard, aliens, analog_keys, button_keys):
+                play_button, scoreboard, aliens, analog_keys, bullet_sound):
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -17,55 +18,56 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_second_player, first_player_bullets, 
             second_player_bullets, scoreboard, aliens)
 
-        # Controller joy axis motion movement
-        elif event.type == pg.JOYAXISMOTION:
-            analog_keys[event.axis] = event.value
-            # Horizontal Analog
+        # Controller joy button
+        if event.type == pg.JOYBUTTONDOWN and play_button.running_state:
+            # First player bullet control
+            if event.button == 5 and event.joy == 1:
+                if len(first_player_bullets) < ship_first_player.bullets_allowed:
+                        bullet_sound.play()
+                        new_bullet = bfp(screen, ship_first_player)
+                        first_player_bullets.add(new_bullet)
+                
+            # Second player bullet control
+            if event.button == 4 and event.joy == 0:
+                if len(second_player_bullets) < ship_second_player.bullets_allowed:
+                        bullet_sound.play()
+                        new_bullet = bsp(screen, ship_second_player)
+                        second_player_bullets.add(new_bullet)
+                        
+                    
 
+
+        # Controller joy axis motion movement
+        if event.type == pg.JOYAXISMOTION:
+            analog_keys[event.axis] = event.value
+            
             # Controller movement for the second player
-            if event.joy == 0:
-                if analog_keys[0] < -.7:
+            if event.joy == 0 and event.axis == 4:
+                if analog_keys[4] < -.1:
                     ship_second_player.left_movement = True
                 else:
                     ship_second_player.left_movement = False
 
-                if analog_keys[0] > .7:
+                if analog_keys[4] > .1:
                     ship_second_player.right_movement = True
                 else:
                     ship_second_player.right_movement = False
+            
             # Controller movement for the second player
-            else:
-                if analog_keys[0] < -.7:
+            if event.joy == 1 and event.axis == 0:
+                if analog_keys[0] < -.1:
                     ship_first_player.left_movement = True
                 else:
                     ship_first_player.left_movement = False
 
-                if analog_keys[0] > .7:
+                if analog_keys[0] > .1:
                     ship_first_player.right_movement = True
                 else:
                     ship_first_player.right_movement = False
 
-        # Controller joy button
-        elif event.type == pg.JOYBUTTONDOWN and play_button.running_state:
-            if event.button == button_keys["x"]:
-                
-                # Second player bullet control
-                if event.joy == 0:
-                    if len(second_player_bullets) < ship_second_player.bullets_allowed:
-                        new_bullet = bsp(screen, ship_second_player)
-                        second_player_bullets.add(new_bullet)
-                # First player bullet control
-                elif event.joy == 1:
-                    if len(first_player_bullets) < ship_first_player.bullets_allowed:
-                        new_bullet = bfp(screen, ship_first_player)
-                        first_player_bullets.add(new_bullet)
-   
-
-        """
-        ------------------ Uncomment if you want to play the game with keyboard buttons ---------------------
-
+        #------------------ Uncomment if you want to play the game with keyboard buttons ---------------------
         # Ship movement functionalities
-        elif event.type == pg.KEYDOWN:
+        """elif event.type == pg.KEYDOWN:
 
             if event.key == pg.K_RIGHT:
                 ship_second_player.right_movement = True
@@ -100,8 +102,7 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                 ship_first_player.left_movement = False
 
             elif event.key == pg.K_d:
-                ship_first_player.right_movement = False
-        """
+                ship_first_player.right_movement = False"""
 
 def update_screen(screen, ship_first_player, ship_second_player, bgc, first_player_bullets, 
                     second_player_bullets, play_button, scoreboard, aliens):
@@ -141,35 +142,35 @@ def upgrade_ship(ship, alien, scoreboard, player):
 
     # Speed factor upgrade
     if alien.alien_code == 1:
-        if alien.life > 10:
+        if alien.life > 8:
             ship.bullet_speed_factor += 2
         else:
             ship.bullet_speed_factor += 1
 
     # Bullet width upgrade
     elif alien.alien_code == 2:
-        if alien.life > 10:
+        if alien.life > 8:
             ship.bullet_width += 2
         else:
             ship.bullet_width += 1
 
     # Bullets allowed upgrade
     elif alien.alien_code == 3:
-        if alien.life > 10:
+        if alien.life > 8:
             ship.bullets_allowed += 2
         else:
             ship.bullets_allowed += 1
 
     # Life reduction upgrade
     elif alien.alien_code == 4:
-        if alien.life > 10:
+        if alien.life > 8:
             ship.life_reduction += 2
         else:
             ship.life_reduction += 1
 
     # Life upgrade
     elif alien.alien_code == 5:
-        if alien.life > 10:
+        if alien.life > 8:
             if player == 1:
                 scoreboard.first_player_life += 20
             else:
@@ -186,12 +187,13 @@ def upgrade_ship(ship, alien, scoreboard, player):
 
 # Bullet - Ship Collisions ----------------------------------------------------------------------------------
 
-def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play_button, second_ship):
+def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play_button, second_ship, hit_sound):
 
     collided_bullet = pg.sprite.spritecollideany(first_ship, second_ship_bullets)
 
     # If a bullet has collided with the first ship
     if collided_bullet:
+        hit_sound.play()
         second_ship_bullets.remove(collided_bullet) # Remove the bullet from the group
         scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
         if(scoreboard.first_player_life <= 0):
@@ -205,14 +207,13 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
        
 
 
-        
-
-def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, play_button, first_ship):
+def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, play_button, first_ship, hit_sound):
 
     collided_bullet = pg.sprite.spritecollideany(second_ship, first_ship_bullets)
     
-    # If a bullet has collided with the ship
+    # If a bullet has collided with the second ship
     if collided_bullet:
+        hit_sound.play()
         first_ship_bullets.remove(collided_bullet)  # Remove the bullet from the group
         scoreboard.second_player_life -= first_ship.life_reduction   # Reduce ship's life by one
         if(scoreboard.second_player_life <= 0):
@@ -228,7 +229,7 @@ def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, pla
  
 # Bullet - Alien Collisions ---------------------------------------------------------------------------
 
-def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_ship, scoreboard):
+def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_ship, scoreboard, alien_sound):
 
     collision = pg.sprite.groupcollide(first_ship_bullets, aliens, True, False)
 
@@ -237,6 +238,7 @@ def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_sh
         collided_alien = collision[list(collision.keys())[0]][0]
         collided_alien.life -= first_ship.life_reduction
         if collided_alien.life <= 0:
+            alien_sound.play()
             upgrade_ship(first_ship, collided_alien, scoreboard, 1)
             aliens.remove(collided_alien)
             
@@ -244,7 +246,7 @@ def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_sh
 
         
 
-def check_second_ship_bullet_alien_collision(second_ship_bullets, aliens, second_ship, scoreboard):
+def check_second_ship_bullet_alien_collision(second_ship_bullets, aliens, second_ship, scoreboard, alien_sound):
 
     collision = pg.sprite.groupcollide(second_ship_bullets, aliens, True, False)
 
@@ -253,8 +255,10 @@ def check_second_ship_bullet_alien_collision(second_ship_bullets, aliens, second
         collided_alien = collision[list(collision.keys())[0]][0]
         collided_alien.life -= second_ship.life_reduction
         if collided_alien.life <= 0:
+            alien_sound.play()
             upgrade_ship(second_ship, collided_alien, scoreboard, 2)
             aliens.remove(collided_alien)
+            
             
 
 
@@ -304,14 +308,26 @@ def create_fleet(screen, aliens):
     # Each time a new fleet of aliens is created, a random number of aliens is choosen
     number_aliens_x = random.randint(1, 9)
 
-    available_alien_positions = [80, 140, 200, 260, 320, 380, 440, 500, 560]
+    available_alien_y_positions = [80, 140, 200, 260, 320, 380, 440, 500, 560]
+    available_alien_x_positions = [1260,-60, 1320, -120, 1380, -180, 1440, -240, 1500]
 
     # Create 'number_aliens_x' aliens 
     for i in range(number_aliens_x):
-        random_index = random.randint(0,(8-i))
-        alien_y_pos = available_alien_positions[random_index]
-        alien = Alien(screen, [1260,-60, 1320, -120], alien_y_pos)
-        available_alien_positions.remove(alien_y_pos)
+        # Choose a random index from available alien positions
+        random_index_y = random.randint(0,(8-i))
+        random_index_x = random.randint(0,(8-i))
+        
+        alien_y_pos = available_alien_y_positions[random_index_y]
+        alien_x_pos = available_alien_x_positions[random_index_x]
+
+
+        # Create an alien
+        alien = Alien(screen, alien_x_pos, alien_y_pos)
+
+        # Remove alien from available positions
+        available_alien_y_positions.remove(alien_y_pos)
+        available_alien_x_positions.remove(alien_x_pos)
+
         aliens.add(alien)       # Add each alien to the group of aliens
 
 def update_aliens(aliens):
