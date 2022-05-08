@@ -13,123 +13,128 @@ from pygame.sprite import Group
     
 
 
-def run_game():
-    pg.init()
-    surface = pg.display.set_mode((1200,700))
-    pg.display.set_caption("Space Arcade")
+class MultiPlayer:
+    def __init__(self) -> None:
+        pass
 
-    # Pygame Groups
-    first_spaceship_bullets = Group()
-    second_spaceship_bullets = Group()
-    aliens = Group()
+    def run_game(self):
+        pg.init()
+        surface = pg.display.set_mode((1200,700))
+        pg.display.set_caption("Space Arcade")
 
-    # Create the fleet of aliens
-    gf.create_fleet(surface, aliens)
+        # Pygame Groups
+        first_spaceship_bullets = Group()
+        second_spaceship_bullets = Group()
+        asteroids = Group()
 
-    # Create a play button
-    play_button = sb(surface, "Play")
+        # Create the fleet of asteroids
+        gf.create_fleet(surface, asteroids)
 
-
-    # Start alien sideway movement timer
-    alien_movement_timer = pg.time.get_ticks()
-    alien_movement_time_range = list(range(1, 6))      # In milliseconds e.g 1 millisec, 2 millisec
-
-    # Fleet of aliens creation time range
-    fleet_aliens_timer = pg.time.get_ticks()
-    fleet_aliens_time_range = [time for time in range(20000, 120001, 5000)]
-
-    # Background color
-    background_color = (230, 230, 230)
-    
-    # Create two players
-    ship_first_player = Spaceship_First_Player(surface)
-    ship_second_player = Spaceship_Second_Player(surface)
-
-    # Create a scoreboard
-    scoreboard = Scoreboard(surface, ship_first_player, ship_second_player)
+        # Create a play button
+        play_button = sb(surface, "Play")
 
 
-    # Initialize controller
-    joysticks = []
-    for i in range(pg.joystick.get_count()):
-        joysticks.append(pg.joystick.Joystick(i))
-    for joystick in joysticks:
-        joystick.init()
+        # Start asteroid sideway movement timer
+        asteroid_movement_timer = pg.time.get_ticks()
+        asteroid_movement_time_range = list(range(1, 6))      # In milliseconds e.g 1 millisec, 2 millisec
 
-    with open(os.path.join("PS4_Keys.json"), 'r+') as file:
-        button_keys = json.load(file)
+        # Fleet of aliens creation time range
+        fleet_asteroids_timer = pg.time.get_ticks()
+        fleet_asteroids_time_range = [time for time in range(20000, 120001, 5000)]
 
-    analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5:-1}
-
-
-    # Initialize sound effects
-    bullet_sound = pg.mixer.Sound('Sounds/laser1.wav')
-    alien_sound = pg.mixer.Sound('Sounds/Explosion_02.wav')
-    hit_sound = pg.mixer.Sound("Sounds/Hit_02.wav")
-
-
-    while True:
-
-        # If the game starts
-        if play_button.running_state:
-
-            # Update for Aliens
-            if (pg.time.get_ticks() - alien_movement_timer) > alien_movement_time_range[random.randint(0,4)]:
-                alien_movement_timer = pg.time.get_ticks()
-                gf.update_aliens(aliens)
-
-            # Create fleet of aliens 
-            if pg.time.get_ticks() - fleet_aliens_timer > fleet_aliens_time_range[random.randint(0,len(fleet_aliens_time_range)-1)]:
-                fleet_aliens_timer = pg.time.get_ticks()
-                gf.create_fleet(surface, aliens)
-            
-            # Updates for ships
-            ship_first_player.update() 
-            ship_second_player.update()
-
-            # Check for ship-bullet collisions
-            gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound)
-            gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound)
-
+        # Background image
+        background_image = pg.image.load("Background\\Space.png").convert()
         
-            # Check for bullet-alien collisions
-            gf.check_first_ship_bullet_alien_collision(first_spaceship_bullets, aliens, ship_first_player, scoreboard, alien_sound)
-            gf.check_second_ship_bullet_alien_collision(second_spaceship_bullets, aliens, ship_second_player, scoreboard, alien_sound)
+        # Create two players
+        ship_first_player = Spaceship_First_Player(surface)
+        ship_second_player = Spaceship_Second_Player(surface)
 
-            # Updates for bullets
-            first_spaceship_bullets.update()
-            second_spaceship_bullets.update()
-
-            # Get rid of bullets that have disappeared
-            for firstPlayerBullet in second_spaceship_bullets.copy():
-                if firstPlayerBullet.rect.bottom >= 700:
-                    second_spaceship_bullets.remove(firstPlayerBullet)
+        # Create a scoreboard
+        scoreboard = Scoreboard(surface, ship_first_player, ship_second_player)
 
 
-            for secondPlayerBullet in first_spaceship_bullets.copy():
-                if secondPlayerBullet.rect.bottom <= 0:
-                    first_spaceship_bullets.remove(secondPlayerBullet)
+        # Initialize controller
+        joysticks = []
+        for i in range(pg.joystick.get_count()):
+            joysticks.append(pg.joystick.Joystick(i))
+        for joystick in joysticks:
+            joystick.init()
+
+        with open(os.path.join("PS4_Keys.json"), 'r+') as file:
+            button_keys = json.load(file)
+
+        analog_keys = {0:0, 1:0, 2:0, 3:0, 4:-1, 5:-1}
+
+
+        # Initialize sound effects
+        bullet_sound = pg.mixer.Sound('Sounds/laser1.wav')
+        asteroid_sound = pg.mixer.Sound('Sounds/Explosion_02.wav')
+        hit_sound = pg.mixer.Sound("Sounds/Hit_02.wav")
+
+
+        while True:
+
+            # If the game starts
+            if play_button.running_state:
+
+                # Update for Aliens
+                if (pg.time.get_ticks() - asteroid_movement_timer) > asteroid_movement_time_range[random.randint(0,4)]:
+                    asteroid_movement_timer = pg.time.get_ticks()
+                    gf.update_asteroids(asteroids)
+
+                # Create fleet of aliens 
+                if pg.time.get_ticks() - fleet_asteroids_timer > fleet_asteroids_time_range[random.randint(0,len(fleet_asteroids_time_range)-1)]:
+                    fleet_asteroids_timer = pg.time.get_ticks()
+                    gf.create_fleet(surface, asteroids)
+                
+                # Updates for ships
+                ship_first_player.update() 
+                ship_second_player.update()
+
+                # Check for ship-bullet collisions
+                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound)
+                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound)
+
             
+                # Check for bullet-alien collisions
+                gf.check_first_ship_bullet_asteroid_collision(first_spaceship_bullets, asteroids, ship_first_player, scoreboard, asteroid_sound)
+                gf.check_second_ship_bullet_asteroid_collision(second_spaceship_bullets, asteroids, ship_second_player, scoreboard, asteroid_sound)
 
-            # Get rid of aliens that have disappeared
-            for alien in aliens.copy():
-                if alien.alien_right_movement and alien.rect.x > 1200:
-                    aliens.remove(alien)
-                elif alien.alien_left_movement and alien.rect.x < 0:
-                    aliens.remove(alien)
+                # Updates for bullets
+                first_spaceship_bullets.update()
+                second_spaceship_bullets.update()
+
+                # Get rid of bullets that have disappeared
+                for firstPlayerBullet in second_spaceship_bullets.copy():
+                    if firstPlayerBullet.rect.bottom >= 700:
+                        second_spaceship_bullets.remove(firstPlayerBullet)
 
 
-        # Check for events 
-        gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
-                        second_spaceship_bullets, play_button, scoreboard, aliens, analog_keys, bullet_sound)
+                for secondPlayerBullet in first_spaceship_bullets.copy():
+                    if secondPlayerBullet.rect.bottom <= 0:
+                        first_spaceship_bullets.remove(secondPlayerBullet)
+                
+
+                # Get rid of aliens that have disappeared
+                for asteroid in asteroids.copy():
+                    if asteroid.asteroid_right_movement and asteroid.rect.x > 1200:
+                        asteroids.remove(asteroid)
+                    elif asteroid.asteroid_left_movement and asteroid.rect.x < 0:
+                        asteroids.remove(asteroid)
 
 
-        # Update the screen
-        gf.update_screen(surface, ship_first_player, ship_second_player, background_color, first_spaceship_bullets, 
-                        second_spaceship_bullets, play_button, scoreboard, aliens)
+            # Check for events 
+            gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound)
+
+
+            # Update the screen
+            gf.update_screen(surface, ship_first_player, ship_second_player, background_image, first_spaceship_bullets, 
+                            second_spaceship_bullets, play_button, scoreboard, asteroids)
 
 
 # Main --------------------------------
 if __name__ == "__main__":
-    run_game()
+    multiplayer_game = MultiPlayer()
+    multiplayer_game.run_game()
 

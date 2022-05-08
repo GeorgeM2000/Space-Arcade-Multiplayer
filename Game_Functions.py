@@ -4,11 +4,11 @@ import pygame as pg
 import random
 from First_Player_Bullets import First_Player_Bullets as bfp
 from Second_Player_Bullets import Second_Player_Bullets as bsp
-from Alien import Alien
+from Asteroid import Asteroid
 
 
 def check_events(screen, ship_first_player, ship_second_player, first_player_bullets, second_player_bullets, 
-                play_button, scoreboard, aliens, analog_keys, bullet_sound):
+                play_button, scoreboard, asteroids, analog_keys, bullet_sound):
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -16,19 +16,19 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
         elif event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
             check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_second_player, first_player_bullets, 
-            second_player_bullets, scoreboard, aliens)
+            second_player_bullets, scoreboard, asteroids)
 
         # Controller joy button
         if event.type == pg.JOYBUTTONDOWN and play_button.running_state:
             # First player bullet control
-            if event.button == 5 and event.joy == 1:
+            if event.button == 5 and event.joy == 0:
                 if len(first_player_bullets) < ship_first_player.bullets_allowed:
                         bullet_sound.play()
                         new_bullet = bfp(screen, ship_first_player)
                         first_player_bullets.add(new_bullet)
                 
             # Second player bullet control
-            if event.button == 4 and event.joy == 0:
+            if event.button == 4 and event.joy == 1:
                 if len(second_player_bullets) < ship_second_player.bullets_allowed:
                         bullet_sound.play()
                         new_bullet = bsp(screen, ship_second_player)
@@ -42,7 +42,7 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             analog_keys[event.axis] = event.value
             
             # Controller movement for the second player
-            if event.joy == 0 and event.axis == 4:
+            if event.joy == 1 and event.axis == 4:
                 if analog_keys[4] < -.1:
                     ship_second_player.left_movement = True
                 else:
@@ -54,7 +54,7 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                     ship_second_player.right_movement = False
             
             # Controller movement for the second player
-            if event.joy == 1 and event.axis == 0:
+            if event.joy == 0 and event.axis == 0:
                 if analog_keys[0] < -.1:
                     ship_first_player.left_movement = True
                 else:
@@ -105,9 +105,9 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                 ship_first_player.right_movement = False"""
 
 def update_screen(screen, ship_first_player, ship_second_player, bgc, first_player_bullets, 
-                    second_player_bullets, play_button, scoreboard, aliens):
+                    second_player_bullets, play_button, scoreboard, asteroids):
     # Fill the screen with background color
-    screen.fill(bgc)
+    screen.blit(bgc, (0, 0))
 
     # Show the first ship
     ship_first_player.blitme()
@@ -115,8 +115,8 @@ def update_screen(screen, ship_first_player, ship_second_player, bgc, first_play
     # Show the second ship
     ship_second_player.blitme()
 
-    # Draw Aliens on the screen
-    aliens.draw(screen)
+    # Draw asteroids on the screen
+    asteroids.draw(screen)
 
     # Show score
     scoreboard.show_score()
@@ -138,39 +138,39 @@ def update_screen(screen, ship_first_player, ship_second_player, bgc, first_play
     pg.display.flip()
 
 
-def upgrade_ship(ship, alien, scoreboard, player):
+def upgrade_ship(ship, asteroid, scoreboard, player):
 
     # Speed factor upgrade
-    if alien.alien_code == 1:
-        if alien.life > 8:
+    if asteroid.asteroid_code == 1:
+        if asteroid.life > 8:
             ship.bullet_speed_factor += 2
         else:
             ship.bullet_speed_factor += 1
 
     # Bullet width upgrade
-    elif alien.alien_code == 2:
-        if alien.life > 8:
+    elif asteroid.asteroid_code == 2:
+        if asteroid.life > 8:
             ship.bullet_width += 2
         else:
             ship.bullet_width += 1
 
     # Bullets allowed upgrade
-    elif alien.alien_code == 3:
-        if alien.life > 8:
+    elif asteroid.asteroid_code == 3:
+        if asteroid.life > 8:
             ship.bullets_allowed += 2
         else:
             ship.bullets_allowed += 1
 
     # Life reduction upgrade
-    elif alien.alien_code == 4:
-        if alien.life > 8:
+    elif asteroid.asteroid_code == 4:
+        if asteroid.life > 8:
             ship.life_reduction += 2
         else:
             ship.life_reduction += 1
 
     # Life upgrade
-    elif alien.alien_code == 5:
-        if alien.life > 8:
+    elif asteroid.asteroid_code == 5:
+        if asteroid.life > 8:
             if player == 1:
                 scoreboard.first_player_life += 20
             else:
@@ -195,7 +195,7 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
     if collided_bullet:
         hit_sound.play()
         second_ship_bullets.remove(collided_bullet) # Remove the bullet from the group
-        scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
+        #scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
         if(scoreboard.first_player_life <= 0):
             play_button.running_state = False
             scoreboard.second_player_score += 1
@@ -229,42 +229,54 @@ def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, pla
  
 # Bullet - Alien Collisions ---------------------------------------------------------------------------
 
-def check_first_ship_bullet_alien_collision(first_ship_bullets, aliens, first_ship, scoreboard, alien_sound):
+def check_first_ship_bullet_asteroid_collision(first_ship_bullets, asteroids, first_ship, scoreboard, asteroid_sound):
 
-    collision = pg.sprite.groupcollide(first_ship_bullets, aliens, True, False)
+    collision = pg.sprite.groupcollide(first_ship_bullets, asteroids, True, False)
 
-    # If an alien has collided with a bullet
+    # If an asteroid has collided with a bullet
     if collision:
-        collided_alien = collision[list(collision.keys())[0]][0]
-        collided_alien.life -= first_ship.life_reduction
-        if collided_alien.life <= 0:
-            alien_sound.play()
-            upgrade_ship(first_ship, collided_alien, scoreboard, 1)
-            aliens.remove(collided_alien)
+
+        # Get the collided asteroid
+        collided_asteroid = collision[list(collision.keys())[0]][0]
+
+        # Reduce it's life by the spaceship's life reduction value
+        collided_asteroid.life -= first_ship.life_reduction
+
+        # If the collided asteroid's life reaches below zero remove it from the group of asteroids
+        if collided_asteroid.life <= 0:
+            asteroid_sound.play()
+            upgrade_ship(first_ship, collided_asteroid, scoreboard, 1)
+            asteroids.remove(collided_asteroid)
             
         
 
         
 
-def check_second_ship_bullet_alien_collision(second_ship_bullets, aliens, second_ship, scoreboard, alien_sound):
+def check_second_ship_bullet_asteroid_collision(second_ship_bullets, asteroids, second_ship, scoreboard, asteroid_sound):
 
-    collision = pg.sprite.groupcollide(second_ship_bullets, aliens, True, False)
+    collision = pg.sprite.groupcollide(second_ship_bullets, asteroids, True, False)
 
-    # If an alien has collided with a bullet
+    # If an asteroid has collided with a bullet
     if collision:
-        collided_alien = collision[list(collision.keys())[0]][0]
-        collided_alien.life -= second_ship.life_reduction
-        if collided_alien.life <= 0:
-            alien_sound.play()
-            upgrade_ship(second_ship, collided_alien, scoreboard, 2)
-            aliens.remove(collided_alien)
+
+        # Get the collided asteroid
+        collided_asteroid = collision[list(collision.keys())[0]][0]
+
+        # Reduce it's life by the spaceship's life reduction value
+        collided_asteroid.life -= second_ship.life_reduction
+
+        # If the collided asteroid's life reaches below zero remove it from the group of asteroids
+        if collided_asteroid.life <= 0:
+            asteroid_sound.play()
+            upgrade_ship(second_ship, collided_asteroid, scoreboard, 2)
+            asteroids.remove(collided_asteroid)
             
             
 
 
 
 def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_second_player, 
-                     bulletsFirstPlayer, bulletsSecondPlayer, scoreboard, aliens):
+                     bulletsFirstPlayer, bulletsSecondPlayer, scoreboard, asteroids):
 
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     # If the start button is clicked and the game has not started
@@ -278,6 +290,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_first_player.bullet_height = 15
         ship_first_player.bullets_allowed = 3
         ship_first_player.initial_life = 10
+        ship_first_player.life_reduction = 1
 
         # Set second ship utilities
         ship_second_player.speed_factor = 1.5
@@ -286,13 +299,14 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_second_player.bullet_height = 15
         ship_second_player.bullets_allowed = 3
         ship_second_player.initial_life = 10
+        ship_second_player.life_reduction = 1
 
         # Empty the bullets group
         bulletsFirstPlayer.empty()
         bulletsSecondPlayer.empty()
 
         # Empty the alien group
-        aliens.empty()
+        asteroids.empty()
 
         # Center both ships
         ship_first_player.center_ship()
@@ -304,13 +318,16 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         scoreboard.prepare_HP()
 
 
-def create_fleet(screen, aliens):
-    # Each time a new fleet of aliens is created, a random number of aliens is choosen
+def create_fleet(screen, asteroids):
+    # Each time a new fleet of aliens is created, a random number of asteroids is choosen
     number_aliens_x = random.randint(1, 9)
+    #number_aliens_x = random.randint(1, 3)
 
     available_alien_y_positions = [80, 140, 200, 260, 320, 380, 440, 500, 560]
     available_alien_x_positions = [1260,-60, 1320, -120, 1380, -180, 1440, -240, 1500]
-
+    #available_alien_y_positions = [140]
+    #available_alien_x_positions = [1260, 1320, 1380, 1440, 1500, 1260, 1380, 1440, 1320]
+    
     # Create 'number_aliens_x' aliens 
     for i in range(number_aliens_x):
         # Choose a random index from available alien positions
@@ -322,13 +339,13 @@ def create_fleet(screen, aliens):
 
 
         # Create an alien
-        alien = Alien(screen, alien_x_pos, alien_y_pos)
+        asteroid = Asteroid(screen, alien_x_pos, alien_y_pos)
 
         # Remove alien from available positions
         available_alien_y_positions.remove(alien_y_pos)
         available_alien_x_positions.remove(alien_x_pos)
 
-        aliens.add(alien)       # Add each alien to the group of aliens
+        asteroids.add(asteroid)       # Add each alien to the group of aliens
 
-def update_aliens(aliens):
-        aliens.update()
+def update_asteroids(asteroids):
+    asteroids.update()

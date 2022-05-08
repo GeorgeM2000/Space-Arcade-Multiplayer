@@ -5,7 +5,7 @@ class Spaceship_First_Player():
     def __init__(self, screen):
         self.screen = screen
 
-        self.image = pg.image.load('Spaceship\\ship.bmp')
+        self.image = pg.image.load("Spaceship\\FirstPlayerSpaceship.png").convert_alpha()
 
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
