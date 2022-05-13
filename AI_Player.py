@@ -2,8 +2,6 @@ import math
 import random
 import sys
 from time import time
-from matplotlib.pyplot import get
-from matplotlib.style import available
 import pygame as pg
 import json
 import Game_Functions as gf
