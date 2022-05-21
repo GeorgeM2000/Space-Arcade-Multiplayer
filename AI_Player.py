@@ -16,6 +16,8 @@ from pygame.sprite import Group
 
 class AIPlayer:
 
+
+    # Fuck
     def __init__(self) -> None:
         pass
         
