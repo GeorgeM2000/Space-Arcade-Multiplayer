@@ -50,14 +50,14 @@ class Asteroid(Sprite):
     # Pick an alien type based on the alien code
     def pick_asteroid_type(self, asteroid_code):
         if asteroid_code == 1:
-            return 'Asteroids\\AsteroidBlue.png' 
+            return 'Asteroids/AsteroidBlue.png' 
         elif asteroid_code == 2:
-            return 'Asteroids\\AsteroidBrown.png'
+            return 'Asteroids/AsteroidBrown.png'
         elif asteroid_code == 3:
-            return 'Asteroids\\AsteroidYellow.png'
+            return 'Asteroids/AsteroidYellow.png'
         elif asteroid_code == 4:
-            return 'Asteroids\\AsteroidOrange.png'
+            return 'Asteroids/AsteroidOrange.png'
         elif asteroid_code == 5:
-            return 'Asteroids\\AsteroidGreen.png'
+            return 'Asteroids/AsteroidGreen.png'
         
         

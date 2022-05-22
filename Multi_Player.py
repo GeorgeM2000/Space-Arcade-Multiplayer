@@ -8,6 +8,7 @@ from Spacehip_Second_Player import Spaceship_Second_Player
 from First_Player_Bullets import First_Player_Bullets as bfp
 from Second_Player_Bullets import Second_Player_Bullets as bsp
 from Start_Button import StartButton as sb
+from Exit_Button import ExitButton as eb
 from Scoreboard import Scoreboard
 from pygame.sprite import Group
     
@@ -33,6 +34,9 @@ class MultiPlayer:
         # Create a play button
         play_button = sb(surface, "Play")
 
+        # Create an exit button
+        exit_button = eb(surface, "Exit")
+
 
         # Start asteroid sideway movement timer
         asteroid_movement_timer = pg.time.get_ticks()
@@ -43,7 +47,7 @@ class MultiPlayer:
         fleet_asteroids_time_range = [time for time in range(20000, 120001, 5000)]
 
         # Background image
-        background_image = pg.image.load("Background\\Space.png").convert()
+        background_image = pg.image.load("Background/Space.png").convert()
         
         # Create two players
         ship_first_player = Spaceship_First_Player(surface)
@@ -76,11 +80,6 @@ class MultiPlayer:
 
             # If the game starts
             if play_button.running_state:
-
-                # Update for Aliens
-                if (pg.time.get_ticks() - asteroid_movement_timer) > asteroid_movement_time_range[random.randint(0,4)]:
-                    asteroid_movement_timer = pg.time.get_ticks()
-                    gf.update_asteroids(asteroids)
 
                 # Create fleet of aliens 
                 if pg.time.get_ticks() - fleet_asteroids_timer > fleet_asteroids_time_range[random.randint(0,len(fleet_asteroids_time_range)-1)]:
@@ -117,24 +116,30 @@ class MultiPlayer:
 
                 # Get rid of aliens that have disappeared
                 for asteroid in asteroids.copy():
+                    # Update for Aliens
+                    if (pg.time.get_ticks() - asteroid_movement_timer) > asteroid_movement_time_range[random.randint(0,4)]:
+                        asteroid_movement_timer = pg.time.get_ticks()
+                        gf.update_asteroids(asteroids)
+
                     if asteroid.asteroid_right_movement and asteroid.rect.x > 1200:
                         asteroids.remove(asteroid)
+
                     elif asteroid.asteroid_left_movement and asteroid.rect.x < 0:
                         asteroids.remove(asteroid)
 
 
             # Check for events 
             gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button=exit_button)
 
 
             # Update the screen
             gf.update_screen(surface, ship_first_player, ship_second_player, background_image, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, exit_button)
 
 
-# Main --------------------------------
+"""# Main --------------------------------
 if __name__ == "__main__":
     multiplayer_game = MultiPlayer()
-    multiplayer_game.run_game()
+    multiplayer_game.run_game()"""
 

@@ -11,9 +11,12 @@ class Scoreboard():
         self.first_player_score= 0
         self.second_player_score = 0
         self.winner = None
-        self.font = pg.font.SysFont("arial", 25) # 30
+        self.font = self.get_font(20)
         self.prepare_HP()
         self.prepare_Score()
+
+    def get_font(self, size): 
+        return pg.font.Font("Fonts/font.ttf", size)
 
     def prepare_HP(self):
 
@@ -59,19 +62,21 @@ class Scoreboard():
     def prepare_winner_message(self):
         # Create winner image
         if self.winner == 1:
-            self.winner_image = self.font.render("First Player Wins!", True, (204,0,0), (230,230,230))
+            self.winner_image = self.font.render("First Player Wins!", True, (204,0,0), None)
         else:
-            self.winner_image = self.font.render("Second Player Wins!", True, (0,0,204), (230,230,230))
+            self.winner_image = self.font.render("Second Player Wins!", True, (0,0,204), None)
         
         # Create winner image rect and place it on the screen
         self.winner_rect = self.winner_image.get_rect()
         self.winner_rect.center = self.screen_rect.center
-        self.winner_rect.bottom = 410
+        self.winner_rect.bottom = 480
 
+    # Show the winner
     def show_winner(self):
         if self.winner != None:
             self.screen.blit(self.winner_image, self.winner_rect)
 
+    # Show the score
     def show_score(self):
         # HP -------------------
         self.screen.blit(self.first_player_hp_image, self.first_player_hp_rect)

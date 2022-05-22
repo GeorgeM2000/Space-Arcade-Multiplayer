@@ -2,12 +2,13 @@ import sys
 import pygame as pg
 import random
 from First_Player_Bullets import First_Player_Bullets as bfp
+from Menu import Menu
 from Second_Player_Bullets import Second_Player_Bullets as bsp
 from Asteroid import Asteroid
 
 
 def check_events(screen, ship_first_player, ship_second_player, first_player_bullets, second_player_bullets, 
-                play_button, scoreboard, asteroids, analog_keys, bullet_sound):
+                play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button):
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -16,6 +17,8 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             mouse_x, mouse_y = pg.mouse.get_pos()
             check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_second_player, first_player_bullets, 
             second_player_bullets, scoreboard, asteroids)
+            check_exit_button(mouse_x, mouse_y, exit_button)
+
 
         # Controller joy button
         if event.type == pg.JOYBUTTONDOWN and play_button.running_state:
@@ -103,10 +106,14 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             elif event.key == pg.K_d:
                 ship_first_player.right_movement = False"""
 
-def update_screen(screen, ship_first_player, ship_second_player, bgc, first_player_bullets, 
-                    second_player_bullets, play_button, scoreboard, asteroids):
-    # Fill the screen with background color
-    screen.blit(bgc, (0, 0))
+        
+
+        
+
+def update_screen(screen, ship_first_player, ship_second_player, bgi, first_player_bullets, 
+                    second_player_bullets, play_button, scoreboard, asteroids, exit_button):
+    # Render background image
+    screen.blit(bgi, (0, 0))
 
     # Show the first ship
     ship_first_player.blitme()
@@ -131,6 +138,7 @@ def update_screen(screen, ship_first_player, ship_second_player, bgc, first_play
     # Draw play button if game state is false
     if not play_button.running_state:
         play_button.draw_button()
+        exit_button.draw_button()
         scoreboard.show_winner()
 
     # Show the most recent screen updates
@@ -194,7 +202,7 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
     if collided_bullet:
         hit_sound.play()
         second_ship_bullets.remove(collided_bullet) # Remove the bullet from the group
-        #scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
+        scoreboard.first_player_life -= second_ship.life_reduction   # Reduce ship's life by one
         if(scoreboard.first_player_life <= 0):
             play_button.running_state = False
             scoreboard.second_player_score += 1
@@ -317,15 +325,22 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         scoreboard.prepare_HP()
 
 
+def check_exit_button(mouse_x, mouse_y, exit_button):
+    button_clicked = exit_button.rect.collidepoint(mouse_x, mouse_y)
+    # If the exit button is clicked and the game has not started
+    if button_clicked:
+        menu = Menu()
+        menu.show_menu()
+
+
+
 def create_fleet(screen, asteroids):
     # Each time a new fleet of aliens is created, a random number of asteroids is choosen
     number_aliens_x = random.randint(1, 9)
-    #number_aliens_x = random.randint(1, 3)
 
     available_alien_y_positions = [80, 140, 200, 260, 320, 380, 440, 500, 560]
     available_alien_x_positions = [1260,-60, 1320, -120, 1380, -180, 1440, -240, 1500]
-    #available_alien_y_positions = [140]
-    #available_alien_x_positions = [1260, 1320, 1380, 1440, 1500, 1260, 1380, 1440, 1320]
+    
     
     # Create 'number_aliens_x' aliens 
     for i in range(number_aliens_x):

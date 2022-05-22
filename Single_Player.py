@@ -1,6 +1,4 @@
-import math
 import random
-import sys
 from time import time
 import pygame as pg
 import json
@@ -11,13 +9,12 @@ from Spacehip_Second_Player import Spaceship_Second_Player
 from First_Player_Bullets import First_Player_Bullets as bfp
 from Second_Player_Bullets import Second_Player_Bullets as bsp
 from Start_Button import StartButton as sb
+from Exit_Button import ExitButton as eb
 from Scoreboard import Scoreboard
 from pygame.sprite import Group
 
-class AIPlayer:
+class SinglePlayer:
 
-
-    # Fuck
     def __init__(self) -> None:
         pass
         
@@ -147,6 +144,9 @@ class AIPlayer:
         # Create a play button
         play_button = sb(surface, "Play")
 
+        # Create an exit button
+        exit_button = eb(surface, "Exit")
+
 
         # Start alien sideway movement timer
         asteroid_movement_timer = pg.time.get_ticks()
@@ -158,7 +158,7 @@ class AIPlayer:
         fleet_asteroids_time_range = [time for time in range(8000, 20001, 2000)] # (20000, 120001, 5000)
 
         # Background image
-        background_image = pg.image.load("Background\\Space.png").convert()
+        background_image = pg.image.load("Background/Space.png").convert()
         
         # Create two players
         ship_first_player = Spaceship_First_Player(surface)
@@ -274,19 +274,19 @@ class AIPlayer:
 
             # Check first player events 
             gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button)
 
 
             # Update the screen
             gf.update_screen(surface, ship_first_player, ship_second_player, background_image, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, exit_button)
             
             
 
 # Main --------------------------------
 if __name__ == "__main__":
-    ai_game = AIPlayer()
-    ai_game.run_game()
+    singlePlayer = SinglePlayer()
+    singlePlayer.run_game()
     
 
         

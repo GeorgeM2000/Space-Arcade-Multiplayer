@@ -5,7 +5,7 @@ class Spaceship_Second_Player():
     def __init__(self, screen):
 
         self.screen = screen
-        self.image = pg.image.load("Spaceship\\SecondPlayerSpaceship.png").convert_alpha()
+        self.image = pg.image.load("Spaceship/SecondPlayerSpaceship.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
         self.rect.centerx = self.screen_rect.centerx
