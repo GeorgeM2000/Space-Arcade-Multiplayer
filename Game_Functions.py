@@ -1,6 +1,7 @@
 import sys
 import pygame as pg
 import random
+import json
 from First_Player_Bullets import First_Player_Bullets as bfp
 from Menu import Menu
 from Second_Player_Bullets import Second_Player_Bullets as bsp
@@ -190,11 +191,30 @@ def upgrade_ship(ship, asteroid, scoreboard, player):
         
 
         scoreboard.prepare_HP()
-    
+
+# Update the player score
+def update_players_score(winner, ai_player=False):
+    # Get players score from json file
+    players_score = {}
+    with open("Players_Score.json", "r") as f:
+            players_score = json.load(f)
+
+    # Update the Wins and Losses 
+    if winner == -1:
+        if not ai_player:
+            players_score["Second_Player"]["Wins"] += 1
+            players_score["First_Player"]["Losses"] += 1
+    else:
+        players_score["Second_Player"]["Losses"] += 1
+        players_score["First_Player"]["Wins"] += 1
+
+    # Update the json file
+    with open("Players_Score.json", "w") as f:
+        json.dump(players_score, f)
 
 # Bullet - Ship Collisions ----------------------------------------------------------------------------------
 
-def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play_button, second_ship, hit_sound):
+def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play_button, second_ship, hit_sound, ai_player):
 
     collided_bullet = pg.sprite.spritecollideany(first_ship, second_ship_bullets)
 
@@ -209,6 +229,7 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
             scoreboard.winner = -1
             scoreboard.prepare_winner_message() # Update the winner
             scoreboard.prepare_Score()  # Update the score
+            update_players_score(scoreboard.winner)  # Update the score stored in the json file
             return
         scoreboard.prepare_HP()    # Update the HP
        
@@ -229,6 +250,7 @@ def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, pla
             scoreboard.winner = 1
             scoreboard.prepare_winner_message() # Winner the winner
             scoreboard.prepare_Score()  # Update the score
+            update_players_score(scoreboard.winner) # Update the score stored in the json file
             return 
         scoreboard.prepare_HP()    # Update the HP
 

@@ -91,7 +91,7 @@ class MultiPlayer:
                 ship_second_player.update()
 
                 # Check for ship-bullet collisions
-                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound)
+                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, False)
                 gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound)
 
             
