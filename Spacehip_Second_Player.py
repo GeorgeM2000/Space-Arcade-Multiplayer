@@ -21,7 +21,7 @@ class Spaceship_Second_Player():
         self.bullet_width = 3
         self.bullet_height = 15
         self.life_reduction = 1
-        self.initial_life = 10
+        self.initial_life = 50
 
     # Update function to move the spaceship
     def update(self):

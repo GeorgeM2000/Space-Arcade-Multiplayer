@@ -84,10 +84,10 @@ class SinglePlayer:
                 ship_second_player.right_movement = False
                 self.fire_bullet(second_spaceship_bullets, ship_second_player, bullet_sound, surface, firing_frequency)
 
-
     # Function to target the player
     def target_player(self, ship_second_player, target, right_movement_freq, left_movement_freq, second_spaceship_bullets, bullet_sound, surface, firing_frequency):
 
+        
         # If the x position of the player's spaceship is greater than the x position of the A.I spaceship
         # and a random number is less than a frequency, then start moving right
         if ship_second_player.rect.x < target.rect.x and random.random() < right_movement_freq:
@@ -105,7 +105,7 @@ class SinglePlayer:
             ship_second_player.right_movement = False
         
         self.fire_bullet(second_spaceship_bullets, ship_second_player, bullet_sound, surface, firing_frequency)
-
+                
             
     # Function to move the spaceship depending on the target
     def move_spaceship(self, ship_second_player, ship_first_player, left_movement_freq, right_movement_freq, target_aquired, target_asteroid, 

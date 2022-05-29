@@ -3,7 +3,7 @@ import pygame as pg
 import random
 import json
 from First_Player_Bullets import First_Player_Bullets as bfp
-from Menu import Menu
+import Menu
 from Second_Player_Bullets import Second_Player_Bullets as bsp
 from Asteroid import Asteroid
 
@@ -12,15 +12,21 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                 play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button):
 
     for event in pg.event.get():
+
+        # Check if the user has exited the game
         if event.type == pg.QUIT:
             sys.exit()
-        elif event.type == pg.MOUSEBUTTONDOWN:
+
+
+        # Check if the user has pressed a keyboard button
+        if event.type == pg.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pg.mouse.get_pos()
             check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_second_player, first_player_bullets, 
             second_player_bullets, scoreboard, asteroids)
             check_exit_button(mouse_x, mouse_y, exit_button)
 
 
+        """
         # Controller joy button
         if event.type == pg.JOYBUTTONDOWN and play_button.running_state:
             # First player bullet control
@@ -67,10 +73,11 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                     ship_first_player.right_movement = True
                 else:
                     ship_first_player.right_movement = False
+            """
 
         #------------------ Uncomment if you want to play the game with keyboard buttons ---------------------
         # Ship movement functionalities
-        """elif event.type == pg.KEYDOWN:
+        if event.type == pg.KEYDOWN:
 
             if event.key == pg.K_RIGHT:
                 ship_second_player.right_movement = True
@@ -105,7 +112,7 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                 ship_first_player.left_movement = False
 
             elif event.key == pg.K_d:
-                ship_first_player.right_movement = False"""
+                ship_first_player.right_movement = False
 
         
 
@@ -318,7 +325,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_first_player.bullet_width = 3
         ship_first_player.bullet_height = 15
         ship_first_player.bullets_allowed = 3
-        ship_first_player.initial_life = 10
+        ship_first_player.initial_life = 100
         ship_first_player.life_reduction = 1
 
         # Set second ship utilities
@@ -327,7 +334,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_second_player.bullet_width = 3
         ship_second_player.bullet_height = 15
         ship_second_player.bullets_allowed = 3
-        ship_second_player.initial_life = 10
+        ship_second_player.initial_life = 20
         ship_second_player.life_reduction = 1
 
         # Empty the bullets group
@@ -351,7 +358,7 @@ def check_exit_button(mouse_x, mouse_y, exit_button):
     button_clicked = exit_button.rect.collidepoint(mouse_x, mouse_y)
     # If the exit button is clicked and the game has not started
     if button_clicked:
-        menu = Menu()
+        menu = Menu.Menu()
         menu.show_menu()
 
 

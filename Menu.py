@@ -1,3 +1,4 @@
+from curses.textpad import rectangle
 import pygame as pg
 import Multi_Player
 import Single_Player
@@ -96,7 +97,8 @@ class Menu:
                         score = Score()
                         score.show_score()
                     if guide.checkForInput(menu_mouse_pos):
-                        pass
+                        guide = Guide()
+                        guide.show_guide()
                     if quit.checkForInput(menu_mouse_pos):
                         pg.quit()
                         sys.exit()
@@ -173,11 +175,11 @@ class Score:
             surface.blit(second_player_images[0], second_player_rectangles[0])
             surface.blit(second_player_images[1], second_player_rectangles[1])
 
-            quit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (200, 550), "EXIT", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (200, 550), "EXIT", self.get_font(35), (215, 252, 212), (255, 255, 255))
             reset = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (600, 550), "RESET", self.get_font(35), (215, 252, 212), (255, 255, 255))
 
 
-            for button in [quit, reset]:
+            for button in [exit, reset]:
                 button.changeColor(menu_mouse_pos)
                 button.update(surface)
 
@@ -186,15 +188,93 @@ class Score:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
-                    if quit.checkForInput(menu_mouse_pos):
+                    if exit.checkForInput(menu_mouse_pos):
                         return
                     elif reset.checkForInput(menu_mouse_pos):
                         players_score = self.reset_score(players_score)
                         first_player = ("WINS:" + str(players_score["First_Player"]["Wins"]), "LOSSES:" + str(players_score["First_Player"]["Losses"]))
                         second_player = ("WINS:" + str(players_score["Second_Player"]["Wins"]), "LOSSES:" + str(players_score["Second_Player"]["Losses"]))
                         
+            pg.display.update()
 
 
+class Guide:
+    def __init__(self) -> None:
+        pass
+
+    def get_font(self, size): 
+        return pg.font.Font("Fonts/font.ttf", size)
+
+
+    def show_guide(self):
+        pg.init()
+        surface = pg.display.set_mode((800, 600))
+        pg.display.set_caption("Space Arcade")
+
+        # Background image
+        background_image = pg.image.load("Background/Space.png").convert()
+
+        # Font
+        font = self.get_font(15)
+
+        # Container
+        container_surface = pg.Surface((800, 400))
+        container_surface.set_alpha(200)
+        container_surface.fill((255,255,255))
+
+        # Spaceship image
+        first_spaceship = pg.image.load("Spaceship/FirstPlayerSpaceship.png").convert_alpha()
+        second_spaceship = pg.image.load("Spaceship/SecondPlayerSpaceship.png").convert_alpha()
+
+        # Brown asteroid
+        brown_asteroid = pg.image.load("Asteroids/AsteroidBrown.png").convert_alpha()
+        
+        while True:
+            surface.blit(background_image, (0, 0))
+
+            guide_mouse_pos = pg.mouse.get_pos()
+
+            guide_text = self.get_font(50).render("GUIDE", True, (182, 143, 64))
+            guide_rect = guide_text.get_rect(center=(400, 50))
+
+            # Show guide text
+            surface.blit(guide_text, guide_rect)
+
+            # Show container
+            surface.blit(container_surface, (0,100))
+
+            # Blit the images
+            surface.blit(pg.transform.scale(first_spaceship, (60,48)), (15,120))
+            surface.blit(pg.transform.scale(second_spaceship, (60,48)), (15,220))
+            surface.blit(pg.transform.scale(brown_asteroid, (60,48)), (15,320))
+
+            # Blit the text
+            surface.blit(font.render("Press R1 to fire.", True, (255,0,0), None), (80, 134))
+            surface.blit(font.render("Move the left joystick to move left and right.", True, (255,0,0), None), (80, 154))
+
+            surface.blit(font.render("Press L1 to fire.", True, (51,51,255), None), (80, 234))
+            surface.blit(font.render("Move the right joystick to move left and right.", True, (51,51,255), None), (80, 254))
+
+
+            surface.blit(font.render("Destroy asteroids to upgrade your spaceship.", True, (0,0,0), None), (80, 334))
+            surface.blit(font.render("The upgrades are random.", True, (0,0,0), None), (80, 354))
+            
+            
+            # Show exit button
+            exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (400, 550), "EXIT", self.get_font(35), (215, 252, 212), (255, 255, 255))
+
+            # Exit button functionality
+            exit.changeColor(guide_mouse_pos)
+            exit.update(surface)
+
+            # Check events
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if exit.checkForInput(guide_mouse_pos):
+                        return
 
             pg.display.update()
     

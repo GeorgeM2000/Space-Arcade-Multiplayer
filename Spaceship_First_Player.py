@@ -21,7 +21,7 @@ class Spaceship_First_Player():
         self.bullet_width = 3
         self.bullet_height = 15
         self.life_reduction = 1
-        self.initial_life = 10
+        self.initial_life = 50
 
     def update(self):
         if self.right_movement and self.rect.right < self.screen_rect.right:
