@@ -29,7 +29,7 @@ class MultiPlayer:
         asteroids = Group()
 
         # Create the fleet of asteroids
-        gf.create_fleet(surface, asteroids)
+        gf.create_asteroids(surface, asteroids)
 
         # Create a play button
         play_button = sb(surface, "Play")
@@ -42,7 +42,7 @@ class MultiPlayer:
         asteroid_movement_timer = pg.time.get_ticks()
         asteroid_movement_time_range = list(range(1, 6))      # In milliseconds e.g 1 millisec, 2 millisec
 
-        # Fleet of aliens creation time range
+        # Set of asteroids creation time range
         fleet_asteroids_timer = pg.time.get_ticks()
         fleet_asteroids_time_range = [time for time in range(20000, 120001, 5000)]
 
@@ -84,7 +84,7 @@ class MultiPlayer:
                 # Create fleet of aliens 
                 if pg.time.get_ticks() - fleet_asteroids_timer > fleet_asteroids_time_range[random.randint(0,len(fleet_asteroids_time_range)-1)]:
                     fleet_asteroids_timer = pg.time.get_ticks()
-                    gf.create_fleet(surface, asteroids)
+                    gf.create_asteroids(surface, asteroids)
                 
                 # Updates for ships
                 ship_first_player.update() 
@@ -138,8 +138,4 @@ class MultiPlayer:
                             second_spaceship_bullets, play_button, scoreboard, asteroids, exit_button)
 
 
-"""# Main --------------------------------
-if __name__ == "__main__":
-    multiplayer_game = MultiPlayer()
-    multiplayer_game.run_game()"""
 

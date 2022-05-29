@@ -236,7 +236,7 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
             scoreboard.winner = -1
             scoreboard.prepare_winner_message() # Update the winner
             scoreboard.prepare_Score()  # Update the score
-            update_players_score(scoreboard.winner)  # Update the score stored in the json file
+            update_players_score(scoreboard.winner, True)  # Update the score stored in the json file
             return
         scoreboard.prepare_HP()    # Update the HP
        
@@ -325,7 +325,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_first_player.bullet_width = 3
         ship_first_player.bullet_height = 15
         ship_first_player.bullets_allowed = 3
-        ship_first_player.initial_life = 100
+        ship_first_player.initial_life = 30
         ship_first_player.life_reduction = 1
 
         # Set second ship utilities
@@ -334,7 +334,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_second_player.bullet_width = 3
         ship_second_player.bullet_height = 15
         ship_second_player.bullets_allowed = 3
-        ship_second_player.initial_life = 20
+        ship_second_player.initial_life = 30
         ship_second_player.life_reduction = 1
 
         # Empty the bullets group
@@ -363,32 +363,32 @@ def check_exit_button(mouse_x, mouse_y, exit_button):
 
 
 
-def create_fleet(screen, asteroids):
-    # Each time a new fleet of aliens is created, a random number of asteroids is choosen
-    number_aliens_x = random.randint(1, 9)
+def create_asteroids(screen, asteroids):
+    # Each time a new set of asteroids is created, a random number of asteroids is choosen
+    number_asteroids_x = random.randint(1, 9)
 
-    available_alien_y_positions = [80, 140, 200, 260, 320, 380, 440, 500, 560]
-    available_alien_x_positions = [1260,-60, 1320, -120, 1380, -180, 1440, -240, 1500]
+    available_asteroid_y_positions = [80, 140, 200, 260, 320, 380, 440, 500, 560]
+    available_asteroid_x_positions = [1260,-60, 1320, -120, 1380, -180, 1440, -240, 1500]
     
     
-    # Create 'number_aliens_x' aliens 
-    for i in range(number_aliens_x):
-        # Choose a random index from available alien positions
+    # Create random number of asteroids
+    for i in range(number_asteroids_x):
+        # Choose a random index from available asteroid positions
         random_index_y = random.randint(0,(8-i))
         random_index_x = random.randint(0,(8-i))
         
-        alien_y_pos = available_alien_y_positions[random_index_y]
-        alien_x_pos = available_alien_x_positions[random_index_x]
+        asteroid_y_pos = available_asteroid_y_positions[random_index_y]
+        asteroid_x_pos = available_asteroid_x_positions[random_index_x]
 
 
-        # Create an alien
-        asteroid = Asteroid(screen, alien_x_pos, alien_y_pos)
+        # Create an asteroid
+        asteroid = Asteroid(screen, asteroid_x_pos, asteroid_y_pos)
 
-        # Remove alien from available positions
-        available_alien_y_positions.remove(alien_y_pos)
-        available_alien_x_positions.remove(alien_x_pos)
+        # Remove asteroid from available positions
+        available_asteroid_y_positions.remove(asteroid_y_pos)
+        available_asteroid_x_positions.remove(asteroid_x_pos)
 
-        asteroids.add(asteroid)       # Add each alien to the group of aliens
+        asteroids.add(asteroid)       # Add each asteroid to the group of asteroids
 
 def update_asteroids(asteroids):
     asteroids.update()

@@ -135,25 +135,29 @@ class Score:
 
         font = self.get_font(40)
 
-
+        # Load players score
         players_score = {}
         with open("Players_Score.json", "r") as f:
             players_score = json.load(f)
 
+        # Prepare the message for the first and second player
         first_player = ("WINS:" + str(players_score["First_Player"]["Wins"]), "LOSSES:" + str(players_score["First_Player"]["Losses"]))
         second_player = ("WINS:" + str(players_score["Second_Player"]["Wins"]), "LOSSES:" + str(players_score["Second_Player"]["Losses"]))
+
         surface_rect = surface.get_rect()
 
         while True:
+            # Blit the background image
             surface.blit(background_image, (0, 0))
 
-            menu_mouse_pos = pg.mouse.get_pos()
+            score_mouse_pos = pg.mouse.get_pos()
 
-            menu_text = self.get_font(50).render("SCORE", True, (182, 143, 64))
-            menu_rect = menu_text.get_rect(center=(400, 50))
+            score_text = self.get_font(50).render("SCORE", True, (182, 143, 64))
+            score_rect = score_text.get_rect(center=(400, 50))
 
-            surface.blit(menu_text, menu_rect)
+            surface.blit(score_text, score_rect)
 
+            # Show first player score
             first_player_images = (font.render(first_player[0], True, (255,0,0), None), font.render(first_player[1], True, (255,0,0), None))
             first_player_rectangles = (first_player_images[0].get_rect(), first_player_images[1].get_rect())
             first_player_rectangles[0].right = surface_rect.right
@@ -164,7 +168,7 @@ class Score:
             surface.blit(first_player_images[0], first_player_rectangles[0])
             surface.blit(first_player_images[1], first_player_rectangles[1])
 
-
+            # Show second player score
             second_player_images = (font.render(second_player[0], True, (0,0,255), None), font.render(second_player[1], True, (0,0,255), None))
             second_player_rectangles = (second_player_images[0].get_rect(), second_player_images[1].get_rect())
             second_player_rectangles[0].left = surface_rect.left
@@ -175,22 +179,26 @@ class Score:
             surface.blit(second_player_images[0], second_player_rectangles[0])
             surface.blit(second_player_images[1], second_player_rectangles[1])
 
+            # Create an exit button
             exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (200, 550), "EXIT", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            
+            # Create a reset button
             reset = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (600, 550), "RESET", self.get_font(35), (215, 252, 212), (255, 255, 255))
 
-
+            # Change button color when user hovers ove them
             for button in [exit, reset]:
-                button.changeColor(menu_mouse_pos)
+                button.changeColor(score_mouse_pos)
                 button.update(surface)
 
+            # Check events
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
-                    if exit.checkForInput(menu_mouse_pos):
+                    if exit.checkForInput(score_mouse_pos):
                         return
-                    elif reset.checkForInput(menu_mouse_pos):
+                    elif reset.checkForInput(score_mouse_pos):
                         players_score = self.reset_score(players_score)
                         first_player = ("WINS:" + str(players_score["First_Player"]["Wins"]), "LOSSES:" + str(players_score["First_Player"]["Losses"]))
                         second_player = ("WINS:" + str(players_score["Second_Player"]["Wins"]), "LOSSES:" + str(players_score["Second_Player"]["Losses"]))
@@ -230,6 +238,7 @@ class Guide:
         brown_asteroid = pg.image.load("Asteroids/AsteroidBrown.png").convert_alpha()
         
         while True:
+            # Blit the background image
             surface.blit(background_image, (0, 0))
 
             guide_mouse_pos = pg.mouse.get_pos()
@@ -248,14 +257,15 @@ class Guide:
             surface.blit(pg.transform.scale(second_spaceship, (60,48)), (15,220))
             surface.blit(pg.transform.scale(brown_asteroid, (60,48)), (15,320))
 
-            # Blit the text
+            # Show instructions for first player
             surface.blit(font.render("Press R1 to fire.", True, (255,0,0), None), (80, 134))
             surface.blit(font.render("Move the left joystick to move left and right.", True, (255,0,0), None), (80, 154))
 
+            # Show instructions for second player
             surface.blit(font.render("Press L1 to fire.", True, (51,51,255), None), (80, 234))
             surface.blit(font.render("Move the right joystick to move left and right.", True, (51,51,255), None), (80, 254))
 
-
+            # Show instructions for destroying asteroids
             surface.blit(font.render("Destroy asteroids to upgrade your spaceship.", True, (0,0,0), None), (80, 334))
             surface.blit(font.render("The upgrades are random.", True, (0,0,0), None), (80, 354))
             
