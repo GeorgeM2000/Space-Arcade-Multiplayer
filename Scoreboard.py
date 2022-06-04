@@ -2,7 +2,7 @@ import pygame as pg
 
 class Scoreboard():
 
-    def __init__(self, screen, ship_first_player, ship_second_player):
+    def __init__(self, screen, ship_first_player, ship_second_player, ai = False, player = ""):
 
         self.screen = screen
         self.screen_rect = screen.get_rect()
@@ -11,6 +11,8 @@ class Scoreboard():
         self.first_player_score= 0
         self.second_player_score = 0
         self.winner = None
+        self.ai = ai
+        self.player = player
         self.font = self.get_font(20)
         self.prepare_HP()
         self.prepare_Score()
@@ -25,8 +27,9 @@ class Scoreboard():
         second_player_hp = "HP " + str(self.second_player_life)
 
         # Create HP image
-        self.first_player_hp_image = self.font.render(first_player_hp, True, (255,0,0), None) # (204,0,0) (230,230,230)
-        self.second_player_hp_image = self.font.render(second_player_hp, True, (51,51,255), None) # (0,0,204) (230,230,230)
+        self.first_player_hp_image = self.font.render(first_player_hp, True, (51,51,255) if self.player == "Second_Player" else (255,0,0), None) 
+        self.second_player_hp_image = self.font.render(second_player_hp, True, (255,0,0) if self.player == "Second_Player" else (51,51,255), None) 
+        
 
         # Create HP rectangle
         self.first_player_hp_rect = self.first_player_hp_image.get_rect()
@@ -45,8 +48,8 @@ class Scoreboard():
         second_player_score = "Score " + str(self.second_player_score)
 
         # Create score image
-        self.first_player_score_image = self.font.render(first_player_score, True, (255,0,0), None)
-        self.second_player_score_image = self.font.render(second_player_score, True, (51,51,255), None)
+        self.first_player_score_image = self.font.render(first_player_score, True, (51,51,255) if self.player == "Second_Player" else (255,0,0), None)
+        self.second_player_score_image = self.font.render(second_player_score, True, (255,0,0) if self.player == "Second_Player" else (51,51,255), None)
 
         # Create score rectangle
         self.first_player_score_rect = self.first_player_score_image.get_rect()
@@ -62,9 +65,15 @@ class Scoreboard():
     def prepare_winner_message(self):
         # Create winner image
         if self.winner == 1:
-            self.winner_image = self.font.render("First Player Wins!", True, (204,0,0), None)
+            if self.ai and self.player == "Second_Player":
+                self.winner_image = self.font.render("A.I Wins!", True, (255,255,255), None)
+            else:
+                self.winner_image = self.font.render("First Player Wins!", True, (204,0,0), None)
         else:
-            self.winner_image = self.font.render("Second Player Wins!", True, (0,0,204), None)
+            if self.ai and self.player == "First_Player":
+                self.winner_image = self.font.render("A.I Wins!", True, (255,255,255), None)
+            else:
+                self.winner_image = self.font.render("Second Player Wins!", True, (0,0,204), None)
         
         # Create winner image rect and place it on the screen
         self.winner_rect = self.winner_image.get_rect()

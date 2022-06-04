@@ -93,11 +93,13 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
 
             if event.key == pg.K_SPACE and play_button.running_state:
                 if len(second_player_bullets) < ship_second_player.bullets_allowed:
+                    bullet_sound.play()
                     new_bullet = bsp(screen, ship_second_player)
                     second_player_bullets.add(new_bullet)
 
             if event.key == pg.K_w and play_button.running_state:
                 if len(first_player_bullets) < ship_first_player.bullets_allowed:
+                    bullet_sound.play()
                     new_bullet = bfp(screen, ship_first_player)
                     first_player_bullets.add(new_bullet)
 
@@ -154,20 +156,28 @@ def update_screen(screen, ship_first_player, ship_second_player, bgi, first_play
 
 
 def upgrade_ship(ship, asteroid, scoreboard, player):
+    # Play upgrade sound
+    pg.mixer.Sound('Sounds/Upgrade.wav').play()
 
     # Speed factor upgrade
     if asteroid.asteroid_code == 1:
-        if asteroid.life > 8:
-            ship.bullet_speed_factor += 2
-        else:
-            ship.bullet_speed_factor += 1
+
+        # If the bullet speed factor is less than 10, upgrade the spaceship
+        if ship.bullet_speed_factor <= 10:
+            if asteroid.life > 8:
+                ship.bullet_speed_factor += 2
+            else:
+                ship.bullet_speed_factor += 1
 
     # Bullet width upgrade
     elif asteroid.asteroid_code == 2:
-        if asteroid.life > 8:
-            ship.bullet_width += 2
-        else:
-            ship.bullet_width += 1
+
+        # If bullet width is less than 10, upgrade the spaceship
+        if ship.bullet_width <= 10:
+            if asteroid.life > 8:
+                ship.bullet_width += 2
+            else:
+                ship.bullet_width += 1
 
     # Bullets allowed upgrade
     elif asteroid.asteroid_code == 3:
@@ -200,20 +210,32 @@ def upgrade_ship(ship, asteroid, scoreboard, player):
         scoreboard.prepare_HP()
 
 # Update the player score
-def update_players_score(winner, ai_player=False):
+def update_players_score(winner, player=None, ai=False):
     # Get players score from json file
     players_score = {}
     with open("Players_Score.json", "r") as f:
             players_score = json.load(f)
 
-    # Update the Wins and Losses 
-    if winner == -1:
-        if not ai_player:
+    if not ai:
+        if winner == -1:
             players_score["Second_Player"]["Wins"] += 1
             players_score["First_Player"]["Losses"] += 1
+        else:
+            players_score["Second_Player"]["Losses"] += 1
+            players_score["First_Player"]["Wins"] += 1
     else:
-        players_score["Second_Player"]["Losses"] += 1
-        players_score["First_Player"]["Wins"] += 1
+        if winner == -1:
+            if player == "First_Player":
+                players_score[player]["Losses"] += 1  
+            else:
+                players_score[player]["Wins"] += 1
+                
+        else:
+            if player == "Second_Player":
+                players_score[player]["Losses"] += 1  
+            else:
+                players_score[player]["Wins"] += 1
+                
 
     # Update the json file
     with open("Players_Score.json", "w") as f:
@@ -221,7 +243,7 @@ def update_players_score(winner, ai_player=False):
 
 # Bullet - Ship Collisions ----------------------------------------------------------------------------------
 
-def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play_button, second_ship, hit_sound, ai_player):
+def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play_button, second_ship, hit_sound, ai, player):
 
     collided_bullet = pg.sprite.spritecollideany(first_ship, second_ship_bullets)
 
@@ -233,16 +255,28 @@ def check_first_ship_collision(first_ship, second_ship_bullets, scoreboard, play
         if(scoreboard.first_player_life <= 0):
             play_button.running_state = False
             scoreboard.second_player_score += 1
-            scoreboard.winner = -1
+            scoreboard.winner = 1 if player == "Second_Player" else -1
+
+            # Play win or lose sound
+            if scoreboard.winner == 1 and player == "Second_Player": 
+                pg.mixer.Sound('Sounds/Laser_Game_Over.wav').play()
+            elif scoreboard.winner == -1 and player == "First_Player": 
+                pg.mixer.Sound('Sounds/Laser_Game_Over.wav').play()
+            else: 
+                if not ai:
+                    pg.mixer.Sound('Sounds/Game_Complete.wav').play()
+                else:
+                    pg.mixer.Sound('Sounds/Win.wav').play()
+
             scoreboard.prepare_winner_message() # Update the winner
             scoreboard.prepare_Score()  # Update the score
-            update_players_score(scoreboard.winner, True)  # Update the score stored in the json file
+            update_players_score(scoreboard.winner, player, ai)  # Update the score stored in the json file
             return
         scoreboard.prepare_HP()    # Update the HP
        
 
 
-def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, play_button, first_ship, hit_sound):
+def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, play_button, first_ship, hit_sound, ai, player):
 
     collided_bullet = pg.sprite.spritecollideany(second_ship, first_ship_bullets)
     
@@ -254,10 +288,22 @@ def check_second_ship_collision(second_ship, first_ship_bullets, scoreboard, pla
         if(scoreboard.second_player_life <= 0):
             play_button.running_state = False  
             scoreboard.first_player_score += 1
-            scoreboard.winner = 1
+            scoreboard.winner = -1 if player == "Second_Player" else 1
+
+            # Play win or lose sound
+            if scoreboard.winner == 1 and player == "Second_Player": 
+                pg.mixer.Sound('Sounds/Laser_Game_Over.wav').play()
+            elif scoreboard.winner == -1 and player == "First_Player": 
+                pg.mixer.Sound('Sounds/Laser_Game_Over.wav').play()
+            else: 
+                if not ai: 
+                    pg.mixer.Sound('Sounds/Game_Complete.wav').play()
+                else:
+                    pg.mixer.Sound('Sounds/Win.wav').play()
+
             scoreboard.prepare_winner_message() # Winner the winner
             scoreboard.prepare_Score()  # Update the score
-            update_players_score(scoreboard.winner) # Update the score stored in the json file
+            update_players_score(scoreboard.winner, player, ai) # Update the score stored in the json file
             return 
         scoreboard.prepare_HP()    # Update the HP
 
@@ -317,6 +363,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
     # If the start button is clicked and the game has not started
     if button_clicked and not play_button.running_state:
+        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
         play_button.running_state = True
 
         # Set first ship utilities
@@ -334,7 +381,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_second_player.bullet_width = 3
         ship_second_player.bullet_height = 15
         ship_second_player.bullets_allowed = 3
-        ship_second_player.initial_life = 30
+        ship_second_player.initial_life = 5
         ship_second_player.life_reduction = 1
 
         # Empty the bullets group
@@ -358,6 +405,7 @@ def check_exit_button(mouse_x, mouse_y, exit_button):
     button_clicked = exit_button.rect.collidepoint(mouse_x, mouse_y)
     # If the exit button is clicked and the game has not started
     if button_clicked:
+        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
         menu = Menu.Menu()
         menu.show_menu()
 

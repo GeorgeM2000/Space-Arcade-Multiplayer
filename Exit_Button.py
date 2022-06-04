@@ -4,9 +4,10 @@ import pygame as pg
 class ExitButton():
 
     def __init__(self, screen, message):
-
         self.screen = screen
         self.screen_rect = screen.get_rect()
+
+        # Button attributes
         self.width, self.height = 200, 50
         self.button_color = (255,0,0)
         self.text_color = (255,255,255)
@@ -14,6 +15,8 @@ class ExitButton():
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = self.screen_rect.center
         self.rect.centery += 60
+
+        # Prepare the message
         self.prep_message(message)
 
     def get_font(self, size): 
@@ -21,12 +24,13 @@ class ExitButton():
 
     def prep_message(self, message):
 
+        # Create the message image, the rectangle and position the rectangle on the screen
         self.msg_image = self.font.render(message, True, self.text_color, self.button_color)
         self.msg_image_rect = self.msg_image.get_rect()
         self.msg_image_rect.center = self.rect.center
         self.msg_image_rect.centery = self.rect.centery
     
-    
+    # Draw the button on the screen
     def draw_button(self):
         self.screen.fill(self.button_color, self.rect)
         self.screen.blit(self.msg_image, self.msg_image_rect)

@@ -15,8 +15,8 @@ from pygame.sprite import Group
 
 class SinglePlayer:
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, player):
+        self.player = player
         
 
     # Function to choose the closest alien based on their y value
@@ -165,7 +165,7 @@ class SinglePlayer:
         ship_second_player = Spaceship_Second_Player(surface)
 
         # Create a scoreboard
-        scoreboard = Scoreboard(surface, ship_first_player, ship_second_player)
+        scoreboard = Scoreboard(surface, ship_first_player, ship_second_player, True, self.player)
 
 
         # Initialize controller
@@ -219,8 +219,8 @@ class SinglePlayer:
                 ship_second_player.update()
 
                 # Check for ship-bullet collisions
-                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, True)
-                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound)
+                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, True, self.player)
+                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound, True, self.player)
 
             
                 # Check for bullet-asteroid collisions

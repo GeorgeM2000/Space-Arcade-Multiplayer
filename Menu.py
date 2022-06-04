@@ -1,4 +1,5 @@
 from curses.textpad import rectangle
+from more_itertools import first
 import pygame as pg
 import Multi_Player
 import Single_Player
@@ -28,6 +29,7 @@ class Menu_Button():
 	def checkForInput(self, position):
 		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
 			return True
+
 		return False
 
 	def changeColor(self, position):
@@ -57,6 +59,10 @@ class Menu:
         # Background image
         background_image = pg.image.load("Background/Space.png").convert()
 
+        # Background music
+        pg.mixer.init()
+        pg.mixer.music.load('Sounds/Menu_Music.wav')
+        pg.mixer.music.play(-1)
 
         while True:
             surface.blit(background_image, (0, 0))
@@ -66,15 +72,15 @@ class Menu:
             menu_text = self.get_font(50).render("MAIN MENU", True, (182, 143, 64))
             menu_rect = menu_text.get_rect(center=(400, 50))
 
-            multi_player = Menu_Button(pg.image.load("Fonts/Multiplayer_Rect.png"), (400, 150), "MULTIPLAYER", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            multi_player = Menu_Button(pg.image.load("Fonts/Multiplayer_Rect.png"), (400, 150), "MULTIPLAYER", self.get_font(35), (215, 252, 212), (210,105,30))
 
-            single_player = Menu_Button(pg.image.load("Fonts/Singleplayer_Rect.png"), (400, 250), "SINGLE PLAYER", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            single_player = Menu_Button(pg.image.load("Fonts/Singleplayer_Rect.png"), (400, 250), "SINGLE PLAYER", self.get_font(35), (215, 252, 212), (128,0,128))
 
-            score = Menu_Button(pg.image.load("Fonts/Score_Rect.png"), (400, 350), "SCORE", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            score = Menu_Button(pg.image.load("Fonts/Score_Rect.png"), (400, 350), "SCORE", self.get_font(35), (215, 252, 212), (255, 140, 0))
 
-            guide = Menu_Button(pg.image.load("Fonts/Guide_Rect.png"), (400, 450), "GUIDE", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            guide = Menu_Button(pg.image.load("Fonts/Guide_Rect.png"), (400, 450), "GUIDE", self.get_font(35), (215, 252, 212), (0, 255, 0))
 
-            quit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (400, 550), "QUIT", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            quit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (400, 550), "QUIT", self.get_font(35), (215, 252, 212), (0, 0, 0))
 
             surface.blit(menu_text, menu_rect)
 
@@ -88,15 +94,20 @@ class Menu:
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if multi_player.checkForInput(menu_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
+                        pg.mixer.music.stop()
                         multiplayer = Multi_Player.MultiPlayer()
                         multiplayer.run_game()
                     if single_player.checkForInput(menu_mouse_pos):
-                        singleplayer = Single_Player.SinglePlayer()
-                        singleplayer.run_game()
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
+                        choose_player = Player_Option()
+                        choose_player.show_player_option()
                     if score.checkForInput(menu_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         score = Score()
                         score.show_score()
                     if guide.checkForInput(menu_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         guide = Guide()
                         guide.show_guide()
                     if quit.checkForInput(menu_mouse_pos):
@@ -180,10 +191,10 @@ class Score:
             surface.blit(second_player_images[1], second_player_rectangles[1])
 
             # Create an exit button
-            exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (200, 550), "EXIT", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (200, 550), "EXIT", self.get_font(35), (215, 252, 212), (0, 0, 0))
             
             # Create a reset button
-            reset = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (600, 550), "RESET", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            reset = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (600, 550), "RESET", self.get_font(35), (215, 252, 212), (218,165,32))
 
             # Change button color when user hovers ove them
             for button in [exit, reset]:
@@ -197,8 +208,10 @@ class Score:
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if exit.checkForInput(score_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         return
                     elif reset.checkForInput(score_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         players_score = self.reset_score(players_score)
                         first_player = ("WINS:" + str(players_score["First_Player"]["Wins"]), "LOSSES:" + str(players_score["First_Player"]["Losses"]))
                         second_player = ("WINS:" + str(players_score["Second_Player"]["Wins"]), "LOSSES:" + str(players_score["Second_Player"]["Losses"]))
@@ -231,8 +244,9 @@ class Guide:
         container_surface.fill((255,255,255))
 
         # Spaceship image
-        first_spaceship = pg.image.load("Spaceship/FirstPlayerSpaceship.png").convert_alpha()
-        second_spaceship = pg.image.load("Spaceship/SecondPlayerSpaceship.png").convert_alpha()
+        first_spaceship = pg.image.load("Spaceship/Spaceship_1.png").convert_alpha()
+        second_spaceship = pg.image.load("Spaceship/Spaceship_1.png").convert_alpha()
+        second_spaceship = pg.transform.flip(second_spaceship, False, True)
 
         # Brown asteroid
         brown_asteroid = pg.image.load("Asteroids/AsteroidBrown.png").convert_alpha()
@@ -271,7 +285,7 @@ class Guide:
             
             
             # Show exit button
-            exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (400, 550), "EXIT", self.get_font(35), (215, 252, 212), (255, 255, 255))
+            exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (400, 550), "EXIT", self.get_font(35), (215, 252, 212), (0, 0, 0))
 
             # Exit button functionality
             exit.changeColor(guide_mouse_pos)
@@ -284,9 +298,70 @@ class Guide:
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if exit.checkForInput(guide_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         return
 
             pg.display.update()
+
+
+class Player_Option:
+    def __init__(self) -> None:
+         pass
+
+    def get_font(self, size): 
+        return pg.font.Font("Fonts/font.ttf", size)
+
+    
+    def show_player_option(self):
+        pg.init()
+        surface = pg.display.set_mode((800, 600))
+        pg.display.set_caption("Space Arcade")
+
+        # Background image
+        background_image = pg.image.load("Background/Space.png").convert()
+
+
+        while True:
+            surface.blit(background_image, (0, 0))
+
+            menu_mouse_pos = pg.mouse.get_pos()
+
+            menu_text = self.get_font(45).render("CHOOSE PLAYER", True, (182, 143, 64))
+            menu_rect = menu_text.get_rect(center=(400, 50))
+
+            first_player = Menu_Button(pg.image.load("Fonts/Multiplayer_Rect.png"), (400, 150), "FIRST PLAYER", self.get_font(35), (215, 252, 212), (255, 0, 0))
+
+            second_player = Menu_Button(pg.image.load("Fonts/Singleplayer_Rect.png"), (400, 250), "SECOND PLAYER", self.get_font(35), (215, 252, 212), (51, 51, 255))
+
+            exit = Menu_Button(pg.image.load("Fonts/Quit_Rect.png"), (400, 350), "EXIT", self.get_font(35), (215, 252, 212), (0, 0, 0))
+
+            surface.blit(menu_text, menu_rect)
+
+            for button in [first_player, second_player, exit]:
+                button.changeColor(menu_mouse_pos)
+                button.update(surface)
+            
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if first_player.checkForInput(menu_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
+                        pg.mixer.music.stop()
+                        singleplayer = Single_Player.SinglePlayer("First_Player")
+                        singleplayer.run_game()
+                    if second_player.checkForInput(menu_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
+                        pg.mixer.music.stop()
+                        singleplayer = Single_Player.SinglePlayer("Second_Player")
+                        singleplayer.run_game()
+                    if exit.checkForInput(menu_mouse_pos):
+                        pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
+                        return
+
+            pg.display.update()
+
     
 
 

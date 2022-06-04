@@ -5,16 +5,19 @@ class First_Player_Bullets(Sprite):
     def __init__(self, screen, ship_first_player):
         super(First_Player_Bullets, self).__init__()
         self.screen = screen
+
+        # Bullet attributes
         self.bullet_speed_factor = ship_first_player.bullet_speed_factor
         self.bullet_width = ship_first_player.bullet_width
         self.bullet_height = ship_first_player.bullet_height
         self.bullet_color = 255,0,0
        
-
+        # Create and position the bullet on the screen
         self.rect = pg.Rect(0,0, self.bullet_width, self.bullet_height)
         self.rect.centerx = ship_first_player.rect.centerx
         self.rect.top = ship_first_player.rect.top
 
+        # y is the initial position of the bullet
         self.y = float(self.rect.y)
 
     def update(self):

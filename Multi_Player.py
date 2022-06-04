@@ -12,8 +12,7 @@ from Exit_Button import ExitButton as eb
 from Scoreboard import Scoreboard
 from pygame.sprite import Group
     
-
-
+    
 class MultiPlayer:
     def __init__(self) -> None:
         pass
@@ -81,7 +80,7 @@ class MultiPlayer:
             # If the game starts
             if play_button.running_state:
 
-                # Create fleet of aliens 
+                # Create asteroids 
                 if pg.time.get_ticks() - fleet_asteroids_timer > fleet_asteroids_time_range[random.randint(0,len(fleet_asteroids_time_range)-1)]:
                     fleet_asteroids_timer = pg.time.get_ticks()
                     gf.create_asteroids(surface, asteroids)
@@ -91,11 +90,11 @@ class MultiPlayer:
                 ship_second_player.update()
 
                 # Check for ship-bullet collisions
-                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, False)
-                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound)
+                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, False, "")
+                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound, False, "")
 
             
-                # Check for bullet-alien collisions
+                # Check for bullet-asteroid collisions
                 gf.check_first_ship_bullet_asteroid_collision(first_spaceship_bullets, asteroids, ship_first_player, scoreboard, asteroid_sound)
                 gf.check_second_ship_bullet_asteroid_collision(second_spaceship_bullets, asteroids, ship_second_player, scoreboard, asteroid_sound)
 
@@ -114,9 +113,9 @@ class MultiPlayer:
                         first_spaceship_bullets.remove(secondPlayerBullet)
                 
 
-                # Get rid of aliens that have disappeared
+                # Get rid of asteroids that have disappeared
                 for asteroid in asteroids.copy():
-                    # Update for Aliens
+                    # Update for asteroids
                     if (pg.time.get_ticks() - asteroid_movement_timer) > asteroid_movement_time_range[random.randint(0,4)]:
                         asteroid_movement_timer = pg.time.get_ticks()
                         gf.update_asteroids(asteroids)
