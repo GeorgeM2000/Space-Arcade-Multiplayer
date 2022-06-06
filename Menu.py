@@ -7,6 +7,8 @@ import json
 import sys
 import os
 
+
+# This class creates the menu button
 class Menu_Button():
 	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
 		self.image = image
@@ -40,7 +42,7 @@ class Menu_Button():
 
 
 
-
+# Main Menu class
 class Menu:
 
     def __init__(self) -> None:
@@ -52,6 +54,8 @@ class Menu:
     
     
     def show_menu(self):
+
+        # Initialize pygame, set dimentions and title
         pg.init()
         surface = pg.display.set_mode((800, 600))
         pg.display.set_caption("Space Arcade")
@@ -59,7 +63,7 @@ class Menu:
         # Background image
         background_image = pg.image.load("Background/Space.png").convert()
 
-        # Background music
+        # Start background music
         pg.mixer.init()
         pg.mixer.music.load('Sounds/Menu_Music.wav')
         pg.mixer.music.play(-1)
@@ -69,9 +73,11 @@ class Menu:
 
             menu_mouse_pos = pg.mouse.get_pos()
 
+            # Create menu text
             menu_text = self.get_font(50).render("MAIN MENU", True, (182, 143, 64))
             menu_rect = menu_text.get_rect(center=(400, 50))
 
+            # Create buttons
             multi_player = Menu_Button(pg.image.load("Fonts/Multiplayer_Rect.png"), (400, 150), "MULTIPLAYER", self.get_font(35), (215, 252, 212), (210,105,30))
 
             single_player = Menu_Button(pg.image.load("Fonts/Singleplayer_Rect.png"), (400, 250), "SINGLE PLAYER", self.get_font(35), (215, 252, 212), (128,0,128))
@@ -84,39 +90,47 @@ class Menu:
 
             surface.blit(menu_text, menu_rect)
 
+            # Update the buttons and change their color as user hovers over them
             for button in [multi_player, single_player, score, guide, quit]:
                 button.changeColor(menu_mouse_pos)
                 button.update(surface)
             
+            # Check events
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
+                    # Multi player
                     if multi_player.checkForInput(menu_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         pg.mixer.music.stop()
                         multiplayer = Multi_Player.MultiPlayer()
                         multiplayer.run_game()
+                    # Single player
                     if single_player.checkForInput(menu_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         choose_player = Player_Option()
                         choose_player.show_player_option()
+                    # Score
                     if score.checkForInput(menu_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         score = Score()
                         score.show_score()
+                    # Guide
                     if guide.checkForInput(menu_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         guide = Guide()
                         guide.show_guide()
+                    # Quit
                     if quit.checkForInput(menu_mouse_pos):
                         pg.quit()
                         sys.exit()
 
             pg.display.update()
 
-
+# Score class
+# This class shows the score for the first ans second player
 class Score:
 
     def __init__(self) -> None:
@@ -127,16 +141,20 @@ class Score:
 
     def reset_score(self, players_score):
         
+        # Set wins and losses for each player to zero
         for key in players_score.keys():
             players_score[key]["Wins"] = 0
             players_score[key]["Losses"] = 0
             
+        # Write it to the "Players_Score.json" file
         with open("Players_Score.json", "w") as f:
             json.dump(players_score, f)
 
         return players_score            
 
     def show_score(self):
+
+        # Initialize pygame, set dimentions and title
         pg.init()
         surface = pg.display.set_mode((800, 600))
         pg.display.set_caption("Space Arcade")
@@ -144,6 +162,7 @@ class Score:
         # Background image
         background_image = pg.image.load("Background/Space.png").convert()
 
+        # Set font style
         font = self.get_font(40)
 
         # Load players score
@@ -154,7 +173,6 @@ class Score:
         # Prepare the message for the first and second player
         first_player = ("WINS:" + str(players_score["First_Player"]["Wins"]), "LOSSES:" + str(players_score["First_Player"]["Losses"]))
         second_player = ("WINS:" + str(players_score["Second_Player"]["Wins"]), "LOSSES:" + str(players_score["Second_Player"]["Losses"]))
-
         surface_rect = surface.get_rect()
 
         while True:
@@ -207,9 +225,11 @@ class Score:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
+                    # Exit
                     if exit.checkForInput(score_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         return
+                    # Reset
                     elif reset.checkForInput(score_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         players_score = self.reset_score(players_score)
@@ -219,6 +239,8 @@ class Score:
             pg.display.update()
 
 
+# Guide class
+# Guide shows information about the game
 class Guide:
     def __init__(self) -> None:
         pass
@@ -228,6 +250,8 @@ class Guide:
 
 
     def show_guide(self):
+
+        # Initialize pygame, set dimentions and title
         pg.init()
         surface = pg.display.set_mode((800, 600))
         pg.display.set_caption("Space Arcade")
@@ -303,7 +327,8 @@ class Guide:
 
             pg.display.update()
 
-
+# Player_Option class
+# This class allows the user to choose the player(first player, second player)
 class Player_Option:
     def __init__(self) -> None:
          pass
@@ -313,6 +338,7 @@ class Player_Option:
 
     
     def show_player_option(self):
+        # Initialize pygame, set dimentions and title
         pg.init()
         surface = pg.display.set_mode((800, 600))
         pg.display.set_caption("Space Arcade")
@@ -326,9 +352,11 @@ class Player_Option:
 
             menu_mouse_pos = pg.mouse.get_pos()
 
+            # Create menu text
             menu_text = self.get_font(45).render("CHOOSE PLAYER", True, (182, 143, 64))
             menu_rect = menu_text.get_rect(center=(400, 50))
 
+            # Create buttons
             first_player = Menu_Button(pg.image.load("Fonts/Multiplayer_Rect.png"), (400, 150), "FIRST PLAYER", self.get_font(35), (215, 252, 212), (255, 0, 0))
 
             second_player = Menu_Button(pg.image.load("Fonts/Singleplayer_Rect.png"), (400, 250), "SECOND PLAYER", self.get_font(35), (215, 252, 212), (51, 51, 255))
@@ -337,6 +365,7 @@ class Player_Option:
 
             surface.blit(menu_text, menu_rect)
 
+            # Update the buttons and change their color au user hovers over them
             for button in [first_player, second_player, exit]:
                 button.changeColor(menu_mouse_pos)
                 button.update(surface)
@@ -346,16 +375,19 @@ class Player_Option:
                     pg.quit()
                     sys.exit()
                 if event.type == pg.MOUSEBUTTONDOWN:
+                    # First player
                     if first_player.checkForInput(menu_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         pg.mixer.music.stop()
                         singleplayer = Single_Player.SinglePlayer("First_Player")
                         singleplayer.run_game()
+                    # Seond player
                     if second_player.checkForInput(menu_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         pg.mixer.music.stop()
                         singleplayer = Single_Player.SinglePlayer("Second_Player")
                         singleplayer.run_game()
+                    # Exit
                     if exit.checkForInput(menu_mouse_pos):
                         pg.mixer.Sound('Sounds/Menu_Selection_Click.wav').play()
                         return
@@ -365,7 +397,7 @@ class Player_Option:
     
 
 
-
+# Main -----------------------------------------
 if __name__ == "__main__":
     menu = Menu()
     menu.show_menu()

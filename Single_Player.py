@@ -33,7 +33,7 @@ class SinglePlayer:
         if random.random() < firing_frequency:
             if len(second_player_bullets) < 1:
                 bullet_sound.play()
-                new_bullet = bsp(screen, ship_second_player)
+                new_bullet = bsp(screen, ship_second_player, True, self.player)
                 second_player_bullets.add(new_bullet)
 
     # Calculate distance between the A.I spaceship and the alien
@@ -137,6 +137,7 @@ class SinglePlayer:
         first_spaceship_bullets = Group()
         second_spaceship_bullets = Group()
         asteroids = Group()
+        explosions = Group()
 
         # Create the fleet of asteroids
         gf.create_asteroids(surface, asteroids)
@@ -148,12 +149,12 @@ class SinglePlayer:
         exit_button = eb(surface, "Exit")
 
 
-        # Start alien sideway movement timer
+        # Start asteroid sideway movement timer
         asteroid_movement_timer = pg.time.get_ticks()
         asteroid_movement_time_range = 2.0      # In milliseconds e.g 1 millisec, 2 millisec
         
 
-        # Fleet of aliens creation time range
+        # Fleet of asteroids creation time range
         fleet_asteroids_timer = pg.time.get_ticks()
         fleet_asteroids_time_range = [time for time in range(20000, 120001, 5000)]
 
@@ -219,8 +220,8 @@ class SinglePlayer:
                 ship_second_player.update()
 
                 # Check for ship-bullet collisions
-                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, True, self.player)
-                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound, True, self.player)
+                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, True, self.player, explosions)
+                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound, True, self.player, explosions)
 
             
                 # Check for bullet-asteroid collisions
@@ -231,7 +232,7 @@ class SinglePlayer:
                 first_spaceship_bullets.update()
                 second_spaceship_bullets.update()
 
-                
+
                 # Get rid of bullets that have disappeared
                 for firstPlayerBullet in second_spaceship_bullets.copy():
                     if firstPlayerBullet.rect.bottom >= 700:
@@ -274,12 +275,12 @@ class SinglePlayer:
 
             # Check first player events 
             gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button, True, self.player)
 
 
             # Update the screen
             gf.update_screen(surface, ship_first_player, ship_second_player, background_image, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids, exit_button)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, exit_button, explosions, True, self.player)
             
             
     

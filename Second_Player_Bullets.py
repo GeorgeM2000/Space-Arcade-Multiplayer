@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.sprite import Sprite 
 
 class Second_Player_Bullets(Sprite):
-    def __init__(self, screen, ship_second_player):
+    def __init__(self, screen, ship_second_player, ai, player):
         super(Second_Player_Bullets, self).__init__()
         self.screen = screen
 
@@ -10,7 +10,12 @@ class Second_Player_Bullets(Sprite):
         self.bullet_speed_factor = ship_second_player.bullet_speed_factor
         self.bullet_width = ship_second_player.bullet_width
         self.bullet_height = ship_second_player.bullet_height
-        self.bullet_color = 51,51,255
+
+        # Determine the bullet color
+        if not ai:
+            self.bullet_color = (51,51,255)
+        else:
+            self.bullet_color = (51,51,255) if player == "First_Player" else (255,0,0)
         
         # Create and position the bullet on the screen
         self.rect = pg.Rect(0,0, self.bullet_width, self.bullet_height)

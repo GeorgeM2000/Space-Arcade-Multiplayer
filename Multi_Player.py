@@ -12,7 +12,6 @@ from Exit_Button import ExitButton as eb
 from Scoreboard import Scoreboard
 from pygame.sprite import Group
     
-    
 class MultiPlayer:
     def __init__(self) -> None:
         pass
@@ -26,6 +25,7 @@ class MultiPlayer:
         first_spaceship_bullets = Group()
         second_spaceship_bullets = Group()
         asteroids = Group()
+        explosions = Group()
 
         # Create the fleet of asteroids
         gf.create_asteroids(surface, asteroids)
@@ -90,8 +90,8 @@ class MultiPlayer:
                 ship_second_player.update()
 
                 # Check for ship-bullet collisions
-                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, False, "")
-                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound, False, "")
+                gf.check_first_ship_collision(ship_first_player, second_spaceship_bullets, scoreboard, play_button, ship_second_player, hit_sound, False, "", explosions)
+                gf.check_second_ship_collision(ship_second_player, first_spaceship_bullets, scoreboard, play_button, ship_first_player, hit_sound, False, "", explosions)
 
             
                 # Check for bullet-asteroid collisions
@@ -101,6 +101,7 @@ class MultiPlayer:
                 # Updates for bullets
                 first_spaceship_bullets.update()
                 second_spaceship_bullets.update()
+
 
                 # Get rid of bullets that have disappeared
                 for firstPlayerBullet in second_spaceship_bullets.copy():
@@ -129,12 +130,12 @@ class MultiPlayer:
 
             # Check for events 
             gf.check_events(surface, ship_first_player, ship_second_player, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button=exit_button)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, analog_keys, bullet_sound, exit_button, False, "")
 
 
             # Update the screen
             gf.update_screen(surface, ship_first_player, ship_second_player, background_image, first_spaceship_bullets, 
-                            second_spaceship_bullets, play_button, scoreboard, asteroids, exit_button)
+                            second_spaceship_bullets, play_button, scoreboard, asteroids, exit_button, explosions, False, "")
 
 
 
