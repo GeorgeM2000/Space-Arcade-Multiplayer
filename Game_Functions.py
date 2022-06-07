@@ -28,21 +28,21 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
             check_exit_button(mouse_x, mouse_y, exit_button)
 
 
-        """
+        
         # Controller joy button
         if event.type == pg.JOYBUTTONDOWN and play_button.running_state:
             # First player bullet control
             if event.button == 5 and event.joy == 0:
                 if len(first_player_bullets) < ship_first_player.bullets_allowed:
                         bullet_sound.play()
-                        new_bullet = bfp(screen, ship_first_player)
+                        new_bullet = bfp(screen, ship_first_player, ai, player)
                         first_player_bullets.add(new_bullet)
                 
             # Second player bullet control
             if event.button == 4 and event.joy == 1:
                 if len(second_player_bullets) < ship_second_player.bullets_allowed:
                         bullet_sound.play()
-                        new_bullet = bsp(screen, ship_second_player)
+                        new_bullet = bsp(screen, ship_second_player, ai, player)
                         second_player_bullets.add(new_bullet)
                         
                     
@@ -75,12 +75,12 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                     ship_first_player.right_movement = True
                 else:
                     ship_first_player.right_movement = False
-            """
+            
             
 
         #------------------ Uncomment if you want to play the game with keyboard buttons ---------------------
         # Ship movement functionalities
-        if event.type == pg.KEYDOWN:
+        """if event.type == pg.KEYDOWN:
 
             if event.key == pg.K_RIGHT:
                 ship_second_player.right_movement = True
@@ -117,7 +117,7 @@ def check_events(screen, ship_first_player, ship_second_player, first_player_bul
                 ship_first_player.left_movement = False
 
             elif event.key == pg.K_d:
-                ship_first_player.right_movement = False
+                ship_first_player.right_movement = False"""
 
         
 
@@ -460,7 +460,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_first_player.bullet_width = 3
         ship_first_player.bullet_height = 15
         ship_first_player.bullets_allowed = 3
-        ship_first_player.initial_life = 5
+        ship_first_player.initial_life = 50
         ship_first_player.life_reduction = 1
 
         # Set second ship utilities
@@ -469,7 +469,7 @@ def check_play_button(mouse_x, mouse_y, play_button, ship_first_player, ship_sec
         ship_second_player.bullet_width = 3
         ship_second_player.bullet_height = 15
         ship_second_player.bullets_allowed = 3
-        ship_second_player.initial_life = 5
+        ship_second_player.initial_life = 50
         ship_second_player.life_reduction = 1
 
         # Empty the bullets group
